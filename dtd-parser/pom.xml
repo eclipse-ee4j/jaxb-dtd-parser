@@ -27,7 +27,7 @@
     <packaging>jar</packaging>
     <name>DTD Parser</name>
     <description>SAX-like API for parsing XML DTDs.</description>
-    <url>http://dtd-parser.java.net/</url>
+    <url>https://github.com/eclipse-ee4j/jaxb-dtd-parser</url>
 
     <scm>
         <connection>scm:git:ssh://git@github.com/eclipse-ee4j/jaxb-dtd-parser.git</connection>
@@ -44,7 +44,6 @@
         </license>
     </licenses>    
 
-
     <developers>
         <developer>
             <id>bravehorsie</id>
@@ -59,6 +58,21 @@
         <name>Oracle</name>
         <url>http://www.oracle.com/</url>
     </organization>
+
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/eclipse-ee4j/jaxb-dtd-parser/issues</url>
+    </issueManagement>
+
+    <mailingLists>
+        <mailingList>
+            <name>Eclipse Implementation of JAXB mailing list</name>
+            <post>jaxb-impl-dev@eclipse.org</post>
+            <subscribe>https://dev.eclipse.org/mailman/listinfo/jaxb-impl-dev</subscribe>
+            <unsubscribe>https://dev.eclipse.org/mailman/listinfo/jaxb-impl-dev</unsubscribe>
+            <archive>https://dev.eclipse.org/mhonarc/lists/jaxb-impl-dev</archive>
+        </mailingList>
+    </mailingLists>
 
     <build>
         <sourceDirectory>src</sourceDirectory>

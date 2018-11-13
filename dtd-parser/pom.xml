@@ -18,7 +18,7 @@
     <parent>
         <groupId>org.eclipse.ee4j</groupId>
         <artifactId>project</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.5</version>
     </parent>
 
     <groupId>com.sun.xml.dtd-parser</groupId>
@@ -42,7 +42,7 @@
             <url>http://www.eclipse.org/org/documents/edl-v10.php</url>
             <distribution>repo</distribution>
         </license>
-    </licenses>    
+    </licenses>
 
     <developers>
         <developer>
@@ -51,13 +51,6 @@
             <email>Roman.Grigoriadi@oracle.com</email>
         </developer>
     </developers>
-
-    <inceptionYear>2005</inceptionYear>
-
-    <organization>
-        <name>Oracle</name>
-        <url>http://www.oracle.com/</url>
-    </organization>
 
     <issueManagement>
         <system>github</system>
@@ -75,24 +68,20 @@
     </mailingLists>
 
     <build>
-        <sourceDirectory>src</sourceDirectory>
-
-        <resources>
-            <resource>
-                <directory>src</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                </includes>
-            </resource>
-        </resources>
-
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.0</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
                     <version>2.5.3</version>
                 </plugin>
@@ -110,7 +99,22 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <version>3.0.0-M2</version>
-                </plugin>               
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>buildnumber-maven-plugin</artifactId>
+                    <version>1.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>3.5.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
@@ -147,6 +151,32 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-legal-resource</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>add-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${legal.doc.source}</directory>
+                                    <includes>
+                                        <include>NOTICE.md</include>
+                                        <include>LICENSE.md</include>
+                                    </includes>
+                                    <targetPath>META-INF</targetPath>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <source>1.7</source>
@@ -167,7 +197,7 @@
                         ${findbugs.exclude}
                     </excludeFilterFile>
                     <fork>true</fork>
-                    <jvmArgs>-Xms64m -Xmx256m</jvmArgs>    
+                    <jvmArgs>-Xms64m -Xmx256m</jvmArgs>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -177,13 +207,62 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <configuration>
+                    <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
+                    <timestampFormat>{0,date,yyyy-MM-dd'T'HH:mm:ssZ}</timestampFormat>
+                    <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
+                    <revisionOnScmFailure>false</revisionOnScmFailure>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                        <configuration>
+                            <instructions>
+                                <Implementation-Build-Id>${project.version} - ${scmBranch}-${buildNumber}, ${timestamp}</Implementation-Build-Id>
+                                <_noee>true</_noee>
+                            </instructions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
         </plugins>
-
     </build>
 
     <reporting>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-changes-plugin</artifactId>
                 <version>2.7.1</version>
                 <configuration>
@@ -197,10 +276,10 @@
         <findbugs.skip>false</findbugs.skip>
         <findbugs.threshold>Low</findbugs.threshold>
         <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
+        <legal.doc.source>${project.basedir}/..</legal.doc.source>
     </properties>
 
     <profiles>
-
         <profile>
             <id>jdk9-setup</id>
             <activation>
@@ -215,9 +294,6 @@
                             <execution>
                                 <id>default-compile</id>
                                 <configuration>
-                                    <jdkToolchain>
-                                        <version>9</version>
-                                    </jdkToolchain>
                                     <source>9</source>
                                     <target>9</target>
                                     <includes>
@@ -233,9 +309,6 @@
                                 <configuration>
                                     <source>1.7</source>
                                     <target>1.7</target>
-                                    <jdkToolchain>
-                                        <version>1.7</version>
-                                    </jdkToolchain>
                                     <excludes>
                                         <exclude>module-info.java</exclude>
                                     </excludes>
@@ -246,7 +319,6 @@
                 </plugins>
             </build>
         </profile>
-
     </profiles>
 
 </project>

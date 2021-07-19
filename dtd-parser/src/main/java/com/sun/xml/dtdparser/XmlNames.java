@@ -28,6 +28,7 @@ public class XmlNames {
      * Returns true if the value is a legal XML name.
      *
      * @param value the string being tested
+     * @return true if the value is a legal XML name
      */
     public static boolean isName(String value) {
         if (value == null)
@@ -49,6 +50,7 @@ public class XmlNames {
      * a "colon" character.
      *
      * @param value the string being tested
+     * @return true if the value is a legal "unqualified" XML name
      */
     public static boolean isUnqualifiedName(String value) {
         if (value == null || value.length() == 0)
@@ -73,6 +75,7 @@ public class XmlNames {
      * name has been declared.)
      *
      * @param value the string being tested
+     * @return true if the value is a legal "qualified" XML name
      */
     public static boolean isQualifiedName(String value) {
         if (value == null)
@@ -106,6 +109,7 @@ public class XmlNames {
      * defined to be of type NMTOKEN(S) must satisfy this predicate.
      *
      * @param token the string being tested
+     * @return true if the identifier is a "name token"
      */
     public static boolean isNmtoken(String token) {
         int length = token.length();
@@ -124,6 +128,7 @@ public class XmlNames {
      * "colon" character.
      *
      * @param token the string being tested
+     * @return true if the identifier is a "name token"
      * @see #isNmtoken
      */
     public static boolean isNCNmtoken(String token) {

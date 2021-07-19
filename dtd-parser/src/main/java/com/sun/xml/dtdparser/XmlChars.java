@@ -32,7 +32,7 @@ public class XmlChars {
      * documents containing only Unicode.  (The <code>char</code> datatype
      * in the Java Programming Language represents Unicode characters,
      * including unpaired surrogates.)
-     * <p>
+     *
      * <P> In XML, UCS-4 characters can also be encoded by the use of
      * <em>character references</em> such as <b>&amp;#x12345678;</b>, which
      * happens to refer to a character that is disallowed in XML documents.
@@ -40,6 +40,7 @@ public class XmlChars {
      * one or two Unicode characters.
      *
      * @param ucs4char The 32-bit UCS-4 character being tested.
+     * @return true if the argument is valid in XML documents
      */
     static public boolean isChar(int ucs4char) {
         // [2] Char ::= #x0009 | #x000A | #x000D
@@ -58,6 +59,8 @@ public class XmlChars {
      * Returns true if the character is allowed to be a non-initial
      * character in names according to the XML recommendation.
      *
+     * @param c character to test
+     * @return true if the character is allowed to be a non-initial character
      * @see #isNCNameChar(char)
      * @see #isLetter(char)
      */
@@ -83,6 +86,8 @@ public class XmlChars {
      * the colon (used to separate names from their scopes) these
      * characters are just as allowed by the XML recommendation.
      *
+     * @param c character to test
+     * @return true if the character is allowed to be a non-initial character
      * @see #isNameChar(char)
      * @see #isLetter(char)
      */
@@ -95,6 +100,8 @@ public class XmlChars {
     /**
      * Returns true if the character is allowed where XML supports
      * whitespace characters, false otherwise.
+     * @param c character to test
+     * @return true if the character is allowed
      */
     public static boolean isSpace(char c) {
         return c == ' ' || c == '\t' || c == '\n' || c == '\r';
@@ -141,6 +148,8 @@ public class XmlChars {
      * start with Letters or a few other characters, but other characters
      * in names must only satisfy the <em>isNameChar</em> predicate.
      *
+     * @param c character to test
+     * @return true if the character is an XML "letter"
      * @see #isNameChar(char)
      * @see #isNCNameChar(char)
      */

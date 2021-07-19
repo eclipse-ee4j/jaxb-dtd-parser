@@ -17,8 +17,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PushbackInputStream;
 import java.io.Reader;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 
 // NOTE:  Add I18N support to this class when JDK gets the ability to
@@ -123,7 +124,7 @@ final class XmlReader extends Reader {
     // in particular none of the EBCDIC ones IANA defines (and
     // which IBM encourages).
     //
-    static private final Hashtable charsets = new Hashtable(31);
+    static private final Map<String, String> charsets = new HashMap<>(31);
 
     static {
         charsets.put("UTF-16", "Unicode");
@@ -165,7 +166,7 @@ final class XmlReader extends Reader {
     // for some cases required by the XML spec
     private static String std2java(String encoding) {
         String temp = encoding.toUpperCase(Locale.ENGLISH);
-        temp = (String) charsets.get(temp);
+        temp = charsets.get(temp);
         return temp != null ? temp : encoding;
     }
 
@@ -424,6 +425,7 @@ final class XmlReader extends Reader {
     /**
      * Reads the number of characters read into the buffer, or -1 on EOF.
      */
+    @Override
     public int read(char buf [], int off, int len) throws IOException {
         int val;
 
@@ -438,6 +440,7 @@ final class XmlReader extends Reader {
     /**
      * Reads a single character.
      */
+    @Override
     public int read() throws IOException {
         int val;
 
@@ -452,6 +455,7 @@ final class XmlReader extends Reader {
     /**
      * Returns true iff the reader supports mark/reset.
      */
+    @Override
     public boolean markSupported() {
         return in == null ? false : in.markSupported();
     }
@@ -462,6 +466,7 @@ final class XmlReader extends Reader {
      *
      * @param value how many characters may be "peeked".
      */
+    @Override
     public void mark(int value) throws IOException {
         if (in != null) in.mark(value);
     }
@@ -469,6 +474,7 @@ final class XmlReader extends Reader {
     /**
      * Resets the current position to the last marked position.
      */
+    @Override
     public void reset() throws IOException {
         if (in != null) in.reset();
     }
@@ -476,6 +482,7 @@ final class XmlReader extends Reader {
     /**
      * Skips a specified number of characters.
      */
+    @Override
     public long skip(long value) throws IOException {
         return in == null ? 0 : in.skip(value);
     }
@@ -483,6 +490,7 @@ final class XmlReader extends Reader {
     /**
      * Returns true iff input characters are known to be ready.
      */
+    @Override
     public boolean ready() throws IOException {
         return in == null ? false : in.ready();
     }
@@ -490,6 +498,7 @@ final class XmlReader extends Reader {
     /**
      * Closes the reader.
      */
+    @Override
     public void close() throws IOException {
         if (closed)
             return;
@@ -518,6 +527,7 @@ final class XmlReader extends Reader {
             buffer = new byte[8192];
         }
 
+        @Override
         public boolean ready() throws IOException {
             return instream == null
                     || (finish - start) > 0
@@ -525,6 +535,7 @@ final class XmlReader extends Reader {
         }
 
         // caller shouldn't read again
+        @Override
         public void close() throws IOException {
             if (instream != null) {
                 instream.close();
@@ -549,6 +560,7 @@ final class XmlReader extends Reader {
             super(stream);
         }
 
+        @Override
         public int read(char buf [], int offset, int len) throws IOException {
             int i = 0, c = 0;
 
@@ -711,6 +723,7 @@ final class XmlReader extends Reader {
             super(in);
         }
 
+        @Override
         public int read(char buf [], int offset, int len) throws IOException {
             int i, c;
 

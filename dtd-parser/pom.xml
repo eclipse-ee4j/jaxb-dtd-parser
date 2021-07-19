@@ -76,7 +76,7 @@
         <spotbugs.exclude>${project.basedir}/exclude.xml</spotbugs.exclude>
         <spotbugs.skip>false</spotbugs.skip>
         <spotbugs.threshold>Low</spotbugs.threshold>
-        <spotbugs.version>4.2.0</spotbugs.version>
+        <spotbugs.version>4.3.0</spotbugs.version>
 
         <legal.doc.source>${project.basedir}/..</legal.doc.source>
     </properties>
@@ -132,7 +132,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -226,6 +226,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <release>9</release>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
                 </configuration>
                 <executions>
                     <execution>

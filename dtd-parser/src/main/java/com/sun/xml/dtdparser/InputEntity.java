@@ -27,11 +27,11 @@ import java.util.Locale;
 /**
  * This is how the parser talks to its input entities, of all kinds.
  * The entities are in a stack.
- * <p>
+ *
  * <P> For internal entities, the character arrays are referenced here,
  * and read from as needed (they're read-only).  External entities have
  * mutable buffers, that are read into as needed.
- * <p>
+ *
  * <P> <em>Note:</em> This maps CRLF (and CR) to LF without regard for
  * whether it's in an external (parsed) entity or not.  The XML 1.0 spec
  * is inconsistent in explaining EOL handling; this is the sensible way.
@@ -183,6 +183,9 @@ public class InputEntity {
 
     /**
      * returns true iff there's no more data to consume ...
+     * @return
+     * @throws IOException for errors
+     * @throws SAXException for errors
      */
     public boolean isEOF() throws IOException, SAXException {
 
@@ -198,6 +201,7 @@ public class InputEntity {
     /**
      * Returns the name of the encoding in use, else null; the name
      * returned is in as standard a form as we can get.
+     * @return the name of the encoding in use
      */
     public String getEncoding() {
 
@@ -218,6 +222,9 @@ public class InputEntity {
      * returns the next name char, or NUL ... faster than getc(),
      * and the common "name or nmtoken must be next" case won't
      * need ungetc().
+     * @return the next name char, or NUL
+     * @throws IOException for errors
+     * @throws SAXException for errors
      */
     public char getNameChar() throws IOException, SAXException {
 
@@ -236,6 +243,9 @@ public class InputEntity {
      * gets the next Java character -- might be part of an XML
      * text character represented by a surrogate pair, or be
      * the end of the entity.
+     * @return the next Java character
+     * @throws IOException for errors
+     * @throws SAXException for errors
      */
     public char getc() throws IOException, SAXException {
 
@@ -295,6 +305,10 @@ public class InputEntity {
 
     /**
      * lookahead one character
+     * @param c character to lookahead
+     * @return true if found
+     * @throws IOException for errors
+     * @throws SAXException for errors
      */
     public boolean peekc(char c) throws IOException, SAXException {
 
@@ -330,6 +344,9 @@ public class InputEntity {
 
     /**
      * optional grammatical whitespace (discarded)
+     * @return
+     * @throws IOException for errors
+     * @throws SAXException for errors
      */
     public boolean maybeWhitespace()
             throws IOException, SAXException {
@@ -371,12 +388,16 @@ public class InputEntity {
     /**
      * normal content; whitespace in markup may be handled
      * specially if the parser uses the content model.
-     * <p>
+     *
      * <P> content terminates with markup delimiter characters,
      * namely ampersand (&amp;amp;) and left angle bracket (&amp;lt;).
-     * <p>
+     *
      * <P> the document handler's characters() method is called
      * on all the content found
+     * @param docHandler
+     * @return
+     * @throws IOException for errors
+     * @throws SAXException for errors
      */
     public boolean parsedContent(DTDEventListener docHandler
                                  /*ElementValidator validator*/)
@@ -538,7 +559,7 @@ public class InputEntity {
      * including unescaped markup delimiters (ampersand and left angle
      * bracket).  This should otherwise be exactly like character data,
      * modulo differences in error report details.
-     * <p>
+     *
      * <P> The document handler's characters() or ignorableWhitespace()
      * methods are invoked on all the character data found
      *
@@ -548,6 +569,9 @@ public class InputEntity {
      *                                 non-whitespace characters will cause validation errors
      * @param whitespaceInvalidMessage if true, ignorable whitespace
      *                                 causes a validity error report as well as a callback
+     * @return
+     * @throws IOException for errors
+     * @throws SAXException for errors
      */
     public boolean unparsedContent(DTDEventListener docHandler,
                                    /*ElementValidator validator,*/
@@ -688,9 +712,13 @@ public class InputEntity {
 
     /**
      * whitespace in markup (flagged to app, discardable)
-     * <p>
+     *
      * <P> the document handler's ignorableWhitespace() method
      * is called on all the whitespace found
+     * @param handler
+     * @return
+     * @throws IOException for errors
+     * @throws SAXException for errors
      */
     public boolean ignorableWhitespace(DTDEventListener handler)
             throws IOException, SAXException {
@@ -746,9 +774,13 @@ public class InputEntity {
     /**
      * returns false iff 'next' string isn't as provided,
      * else skips that text and returns true.
-     * <p>
+     *
      * <P> NOTE:  two alternative string representations are
      * both passed in, since one is faster.
+     * @param chars
+     * @return false iff 'next' string isn't as provided
+     * @throws IOException for errors
+     * @throws SAXException for errors
      */
     public boolean peek(String next, char chars [])
             throws IOException, SAXException {
@@ -798,7 +830,7 @@ public class InputEntity {
             // the wrong symbol is a fatal error anyway ...
             //
             if (len > buf.length) {
-                fatal("P-077", new Object[]{Integer.valueOf(buf.length)});
+                fatal("P-077", new Object[]{buf.length});
             }
 
             fillbuf();
@@ -855,6 +887,7 @@ public class InputEntity {
 
     /**
      * Returns the public ID of this input source, if known
+     * @return the public ID of this input source
      */
     public String getPublicId() {
 
@@ -866,6 +899,7 @@ public class InputEntity {
 
     /**
      * Returns the system ID of this input source, if known
+     * @return the system ID of this input source
      */
     public String getSystemId() {
 
@@ -877,6 +911,7 @@ public class InputEntity {
 
     /**
      * Returns the current line number in this input source
+     * @return the current line number
      */
     public int getLineNumber() {
 
@@ -888,6 +923,7 @@ public class InputEntity {
 
     /**
      * returns -1; maintaining column numbers hurts performance
+     * @return -1
      */
     public int getColumnNumber() {
 

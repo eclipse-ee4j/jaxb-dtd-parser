@@ -6,8 +6,6 @@
 [//]: # "  "
 [//]: # " SPDX-License-Identifier: BSD-3-Clause "
 
-[![Build Status](https://travis-ci.com/eclipse-ee4j/jaxb-dtd-parser.svg?branch=master)](https://travis-ci.com/eclipse-ee4j/jaxb-dtd-parser)
-
 # DTD Parser
 
 SAX-like API for parsing XML DTDs.

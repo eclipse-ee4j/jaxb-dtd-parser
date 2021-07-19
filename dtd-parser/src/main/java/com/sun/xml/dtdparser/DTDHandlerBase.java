@@ -19,87 +19,118 @@ import org.xml.sax.SAXParseException;
  */
 public class DTDHandlerBase implements DTDEventListener {
 
+    /**
+     * Constructs a DTDHandlerBase.
+     */
+    public DTDHandlerBase() {}
+
+    @Override
     public void processingInstruction(String target, String data)
             throws SAXException {
     }
 
+    @Override
     public void setDocumentLocator(Locator loc) {
     }
 
+    @Override
     public void fatalError(SAXParseException e) throws SAXException {
         throw e;
     }
 
+    @Override
     public void error(SAXParseException e) throws SAXException {
         throw e;
     }
 
+    @Override
     public void warning(SAXParseException err) throws SAXException {
     }
 
+    @Override
     public void notationDecl(String name, String publicId, String systemId) throws SAXException {
     }
 
+    @Override
     public void unparsedEntityDecl(String name, String publicId,
                                    String systemId, String notationName) throws SAXException {
     }
 
+    @Override
     public void endDTD() throws SAXException {
     }
 
+    @Override
     public void externalGeneralEntityDecl(String n, String p, String s) throws SAXException {
     }
 
+    @Override
     public void internalGeneralEntityDecl(String n, String v) throws SAXException {
     }
 
+    @Override
     public void externalParameterEntityDecl(String n, String p, String s) throws SAXException {
     }
 
+    @Override
     public void internalParameterEntityDecl(String n, String v) throws SAXException {
     }
 
+    @Override
     public void startDTD(InputEntity in) throws SAXException {
     }
 
+    @Override
     public void comment(String n) throws SAXException {
     }
 
+    @Override
     public void characters(char ch[], int start, int length) throws SAXException {
     }
 
+    @Override
     public void ignorableWhitespace(char ch[], int start, int length) throws SAXException {
     }
 
+    @Override
     public void startCDATA() throws SAXException {
     }
 
+    @Override
     public void endCDATA() throws SAXException {
     }
 
 
+    @Override
     public void startContentModel(String elementName, short contentModelType) throws SAXException {
     }
 
+    @Override
     public void endContentModel(String elementName, short contentModelType) throws SAXException {
     }
 
+    @Override
     public void attributeDecl(String elementName, String attributeName, String attributeType,
                               String[] enumeration, short attributeUse, String defaultValue) throws SAXException {
     }
 
+    @Override
     public void childElement(String elementName, short occurence) throws SAXException {
     }
 
+    @Override
     public void mixedElement(String elementName) throws SAXException {
     }
 
+    @Override
     public void startModelGroup() throws SAXException {
     }
 
+    @Override
     public void endModelGroup(short occurence) throws SAXException {
     }
 
+    @Override
     public void connector(short connectorType) throws SAXException {
     }
 }

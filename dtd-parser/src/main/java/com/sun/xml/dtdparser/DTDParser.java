@@ -19,10 +19,11 @@ import org.xml.sax.SAXParseException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -69,12 +70,12 @@ public class DTDParser {
     private boolean doLexicalPE;
     // DTD state, used during parsing
 //    private SimpleHashtable    elements = new SimpleHashtable (47);
-    protected final Set declaredElements = new java.util.HashSet();
-    private SimpleHashtable params = new SimpleHashtable(7);
+    protected final Set<String> declaredElements = new HashSet<>();
+    private final SimpleHashtable<String, EntityDecl> params = new SimpleHashtable<>(7);
     // exposed to package-private subclass
-    Hashtable notations = new Hashtable(7);
-    SimpleHashtable entities = new SimpleHashtable(17);
-    private SimpleHashtable ids = new SimpleHashtable();
+    Map<String, Object> notations = new HashMap<>(7);
+    SimpleHashtable<String, EntityDecl> entities = new SimpleHashtable<>(17);
+    private final SimpleHashtable<String, Boolean> ids = new SimpleHashtable<>();
     // listeners for DTD parsing events
     private DTDEventListener dtdHandler;
     private EntityResolver resolver;
@@ -85,12 +86,18 @@ public class DTDParser {
     static final String strEMPTY = "EMPTY";
 
     private static final Logger LOGGER = Logger.getLogger(DTDParser.class.getName());
-    
+
+    /**
+     * Constructs a DTDParser.
+     */
+    public DTDParser() {}
+
     /**
      * Used by applications to request locale for diagnostics.
      *
      * @param l The locale to use, or null to use system defaults (which may
      * include only message IDs).
+     * @throws SAXException for errors
      */
     public void setLocale(Locale l) throws SAXException {
 
@@ -103,6 +110,7 @@ public class DTDParser {
 
     /**
      * Returns the diagnostic locale.
+     * @return the diagnostic locale
      */
     public Locale getLocale() {
         return locale;
@@ -119,6 +127,7 @@ public class DTDParser {
      * preferable one at the front. For example, "en-ca" then "fr-ca", followed
      * by "zh_CN". Both RFC 1766 and Java styles are supported.
      * @return The chosen locale, or null.
+     * @throws SAXException for errors
      * @see MessageCatalog
      */
     public Locale chooseLocale(String languages[])
@@ -134,6 +143,7 @@ public class DTDParser {
 
     /**
      * Lets applications control entity resolution.
+     * @param r EntityResolver
      */
     public void setEntityResolver(EntityResolver r) {
 
@@ -142,6 +152,7 @@ public class DTDParser {
 
     /**
      * Returns the object used to resolve entities
+     * @return the object used to resolve entities
      */
     public EntityResolver getEntityResolver() {
 
@@ -150,6 +161,7 @@ public class DTDParser {
 
     /**
      * Used by applications to set handling of DTD parsing events.
+     * @param handler
      */
     public void setDtdHandler(DTDEventListener handler) {
         dtdHandler = handler;
@@ -180,6 +192,7 @@ public class DTDParser {
 
     /**
      * Returns the handler used to for DTD parsing events.
+     * @return the handler
      */
     public DTDEventListener getDtdHandler() {
         return dtdHandler;
@@ -187,6 +200,9 @@ public class DTDParser {
 
     /**
      * Parse a DTD.
+     * @param in
+     * @throws IOException for errors
+     * @throws SAXException for errors
      */
     public void parse(InputSource in)
             throws IOException, SAXException {
@@ -196,6 +212,9 @@ public class DTDParser {
 
     /**
      * Parse a DTD.
+     * @param uri
+     * @throws IOException for errors
+     * @throws SAXException for errors
      */
     public void parse(String uri)
             throws IOException, SAXException {
@@ -349,10 +368,10 @@ public class DTDParser {
         // after the document element is parsed, since XML allows forward
         // references, and only now can we know if they're all resolved.
 
-        for (Enumeration e = ids.keys();
+        for (Enumeration<String> e = ids.keys();
                 e.hasMoreElements();) {
-            String id = (String) e.nextElement();
-            Boolean value = (Boolean) ids.get(id);
+            String id = e.nextElement();
+            Boolean value = ids.get(id);
             if (Boolean.FALSE.equals(value)) {
                 error("V-024", new Object[]{id});
             }
@@ -435,7 +454,7 @@ public class DTDParser {
         // [7] Nmtoken ::= (Namechar)+
         char c = getc();
         if (!XmlChars.isNameChar(c)) {
-            fatal("P-006", new Object[]{Character.valueOf(c)});
+            fatal("P-006", new Object[]{c});
         }
         return nameCharString(c).name;
     }
@@ -584,11 +603,11 @@ public class DTDParser {
     }
 
     // does a SINGLE expansion of the entity (often reparsed later)
-    private void expandEntityInLiteral(String name, SimpleHashtable table,
+    private void expandEntityInLiteral(String name, SimpleHashtable<String, EntityDecl> table,
             boolean isEntityValue)
             throws IOException, SAXException {
 
-        Object entity = table.get(name);
+        EntityDecl entity = table.get(name);
 
         if (entity instanceof InternalEntity) {
             InternalEntity value = (InternalEntity) entity;
@@ -635,7 +654,7 @@ public class DTDParser {
 
         strTmp = new StringBuffer();
         while ((c = in.getc()) != quote) {
-            strTmp.append((char) c);
+            strTmp.append(c);
         }
         return strTmp.toString();
     }
@@ -650,7 +669,7 @@ public class DTDParser {
             if (" \r\n-'()+,./:=?;!*#@$_%0123456789".indexOf(c) == -1
                     && !(c >= 'A' && c <= 'Z')
                     && !(c >= 'a' && c <= 'z')) {
-                fatal("P-016", new Object[]{Character.valueOf(c)});
+                fatal("P-016", new Object[]{c});
             }
         }
         strTmp = new StringBuffer();
@@ -781,7 +800,7 @@ public class DTDParser {
     // [21] CDEnd ::= ']]>'
     //
     //    ... handled by InputEntity.unparsedContent()
-    // collapsing several rules together ... 
+    // collapsing several rules together ...
     // simpler than attribute literals -- no reference parsing!
     private String maybeReadAttribute(String name, boolean must)
             throws IOException, SAXException {
@@ -872,7 +891,7 @@ public class DTDParser {
                 || maybePI(false)
                 || maybeComment(false);
     }
-    private static final String XmlLang = "xml:lang";
+    private static final String XML_LANG = "xml:lang";
 
     private boolean isXmlLang(String value) {
 
@@ -1104,7 +1123,7 @@ public class DTDParser {
         maybeWhitespace();
         char c = getc();
         if (c != '>') {
-            fatal("P-036", new Object[]{name, Character.valueOf(c)});
+            fatal("P-036", new Object[]{name, c});
         }
         if (start != in) {
             error("V-013", null);
@@ -1188,7 +1207,7 @@ public class DTDParser {
             } else {
                 fatal((type == 0) ? "P-039"
                         : ((type == ',') ? "P-037" : "P-038"),
-                        new Object[]{Character.valueOf(getc())});
+                        new Object[]{getc()});
             }
 
             maybeWhitespace();
@@ -1209,9 +1228,7 @@ public class DTDParser {
                 } else {
                     fatal((type == 0) ? "P-041" : "P-040",
                             new Object[]{
-                                Character.valueOf(c),
-                                Character.valueOf(type)
-                            });
+                                c, type});
                 }
             } else {
                 type = getc();
@@ -1278,7 +1295,7 @@ public class DTDParser {
         }
     }
 
-    // '(' S? '#PCDATA' already consumed 
+    // '(' S? '#PCDATA' already consumed
     // matching ')' must be in "start" entity if validating
     private void getMixed(String elementName, /*Element element,*/ InputEntity start)
             throws IOException, SAXException {
@@ -1295,7 +1312,7 @@ public class DTDParser {
             return;
         }
 
-        ArrayList l = new ArrayList();
+        List<String> l = new ArrayList<>();
 //    l.add(new StringModel(StringModelType.PCDATA));
 
 
@@ -1322,7 +1339,7 @@ public class DTDParser {
 
         if (!peek("\u0029*")) // right paren
         {
-            fatal("P-043", new Object[]{elementName, Character.valueOf(getc())});
+            fatal("P-043", new Object[]{elementName, getc()});
         }
         if (in != start) {
             error("V-014", new Object[]{elementName});
@@ -1375,14 +1392,14 @@ public class DTDParser {
             // look for attribute name otherwise
             String attName = maybeGetName();
             if (attName == null) {
-                fatal("P-044", new Object[]{Character.valueOf(getc())});
+                fatal("P-044", new Object[]{getc()});
             }
             whitespace("F-001");
 
 ///        Attribute    a = new Attribute (name);
 
             String typeName;
-            Vector values = null;    // notation/enumeration values
+            List<String> values = null;    // notation/enumeration values
 
             // Note:  use the type constants from Attribute
             // so that "==" may be used (faster)
@@ -1424,7 +1441,7 @@ public class DTDParser {
                 nextChar('(', "F-029", null);
                 maybeWhitespace();
 
-                values = new Vector();
+                values = new ArrayList<>();
                 do {
                     String name;
                     if ((name = maybeGetName()) == null) {
@@ -1434,7 +1451,7 @@ public class DTDParser {
                     if (notations.get(name) == null) {
                         notations.put(name, name);
                     }
-                    values.addElement(name);
+                    values.add(name);
                     maybeWhitespace();
                     if (peek("|")) {
                         maybeWhitespace();
@@ -1452,11 +1469,11 @@ public class DTDParser {
                 maybeWhitespace();
 
 ///            Vector v = new Vector ();
-                values = new Vector();
+                values = new ArrayList<>();
                 do {
                     String name = getNmtoken();
 ///                v.addElement (name);
-                    values.addElement(name);
+                    values.add(name);
                     maybeWhitespace();
                     if (peek("|")) {
                         maybeWhitespace();
@@ -1467,7 +1484,7 @@ public class DTDParser {
 ///                a.setValue(i, (String)v.elementAt(i));
             } else {
                 fatal("P-045",
-                        new Object[]{attName, Character.valueOf(getc())});
+                        new Object[]{attName, getc()});
                 typeName = null;
             }
 
@@ -1500,7 +1517,7 @@ public class DTDParser {
                     defaultValue = strTmp.toString();
                 }
 
-// TODO: implement this check        
+// TODO: implement this check
 ///            if (a.type() != Attribute.CDATA)
 ///                validateAttributeSyntax (a, a.defaultValue());
             } else if (!peek("#IMPLIED")) {
@@ -1521,7 +1538,7 @@ public class DTDParser {
                     defaultValue = strTmp.toString();
                 }
 
-// TODO: implement this check        
+// TODO: implement this check
 ///            if (a.type() != Attribute.CDATA)
 ///                validateAttributeSyntax (a, a.defaultValue());
             } else {
@@ -1529,7 +1546,7 @@ public class DTDParser {
                 attributeUse = DTDEventListener.USE_NORMAL;
             }
 
-            if (XmlLang.equals(attName)
+            if (XML_LANG.equals(attName)
                     && defaultValue/* a.defaultValue()*/ != null
                     && !isXmlLang(defaultValue/*a.defaultValue()*/)) {
                 error("P-033", new Object[]{defaultValue /*a.defaultValue()*/});
@@ -1541,7 +1558,7 @@ public class DTDParser {
 ///            dtdHandler.attributeDecl(a);
 ///        }
 
-            String[] v = (values != null) ? (String[]) values.toArray(new String[values.size()]) : null;
+            String[] v = (values != null) ? values.toArray(new String[values.size()]) : null;
             dtdHandler.attributeDecl(elementName, attName, typeName, v, attributeUse, defaultValue);
             maybeWhitespace();
         }
@@ -1655,8 +1672,6 @@ public class DTDParser {
                     if (peek("]>")) {
                         nestlevel--;
                     }
-                } else {
-                    continue;
                 }
             }
         } else {
@@ -1789,7 +1804,7 @@ public class DTDParser {
         }
 
         String entityName;
-        SimpleHashtable defns;
+        SimpleHashtable<String, EntityDecl> defns;
         ExternalEntity externalId;
         boolean doStore;
 
@@ -1929,6 +1944,10 @@ public class DTDParser {
             if (uri.length() == 0) {
                 uri = ".";
             }
+            if (baseURI == null) {
+                // make spotbugs happy
+                throw new NullPointerException("baseURI cannot be null");
+            }
             baseURI = baseURI.substring(0, baseURI.lastIndexOf('/') + 1);
             if (uri.charAt(0) != '/') {
                 uri = baseURI + uri;
@@ -2032,7 +2051,7 @@ public class DTDParser {
                     || c == '.')) {
                 continue;
             }
-            fatal("P-060", new Object[]{Character.valueOf(c)});
+            fatal("P-060", new Object[]{c});
         }
 
         //
@@ -2209,7 +2228,7 @@ public class DTDParser {
             in = in.pop();
         }
         if (!in.peekc(c)) {
-            fatal("P-008", new Object[]{Character.valueOf(c),
+            fatal("P-008", new Object[]{c,
                         messages.getMessage(locale, location),
                         (near == null ? "" : ('"' + near + '"'))});
         }

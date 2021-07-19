@@ -19,15 +19,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * This entity resolver class provides a number of utilities which can help
- * managment of external parsed entities in XML.  These are commonly used
+ * management of external parsed entities in XML.  These are commonly used
  * to hold markup declarations that are to be used as part of a Document
  * Type Declaration (DTD), or to hold text marked up with XML.
- * <p>
+ *
  * <P> Features include: <UL>
  *
  * <LI> Static factory methods are provided for constructing SAX InputSource
@@ -66,7 +67,7 @@ import java.util.Locale;
  * the notion of a set of entries.</LI>
  *
  * </UL>
- * <p>
+ *
  * <P> Subclasses can perform tasks such as supporting new URI schemes for
  * URIs which are not URLs, such as URNs (see RFC 2396) or for accessing
  * MIME entities which are part of a <em>multipart/related</em> group
@@ -83,11 +84,11 @@ public class Resolver implements EntityResolver {
     private boolean ignoringMIME;
 
     // table mapping public IDs to (local) URIs
-    private Hashtable id2uri;
+    private Map<String, String> id2uri;
 
     // tables mapping public IDs to resources and classloaders
-    private Hashtable id2resource;
-    private Hashtable id2loader;
+    private Map<String, String> id2resource;
+    private Map<String, ClassLoader> id2loader;
 
     //
     // table of MIME content types (less attributes!) known
@@ -141,6 +142,8 @@ public class Resolver implements EntityResolver {
      * @param scheme      Unless this is "file", unspecified MIME types
      *                    default to US-ASCII.  Files are always autodetected since most
      *                    file systems discard character encoding information.
+     * @return an input source
+     * @throws IOException for errors
      */
     public static InputSource createInputSource(String contentType,
                                                 InputStream stream,
@@ -228,6 +231,8 @@ public class Resolver implements EntityResolver {
      * @param uri       the URI (system ID) for the entity
      * @param checkType if true, the MIME content type for the entity
      *                  is checked for document type and character set encoding.
+     * @return an input source from given URI
+     * @throws IOException for errors
      */
     static public InputSource createInputSource(URL uri, boolean checkType)
             throws IOException {
@@ -250,6 +255,9 @@ public class Resolver implements EntityResolver {
     /**
      * Creates an input source from a given file, autodetecting
      * the character encoding.
+     * @param file file to create an input source from
+     * @return an input source from given file
+     * @throws IOException for errors
      */
     static public InputSource createInputSource(File file)
             throws IOException {
@@ -281,7 +289,7 @@ public class Resolver implements EntityResolver {
      * consulted.  If no mapping is found there, a catalog mapping names
      * to java resources is consulted.  Finally, if neither mapping found
      * a copy of the entity, the specified URI is used.
-     * <p>
+     *
      * <P> When a URI is used, <a href="#createInputSource">
      * createInputSource</a> is used to correctly deduce the character
      * encoding used by this entity.  No MIME type checking is done.
@@ -290,6 +298,8 @@ public class Resolver implements EntityResolver {
      *             this value is non-null; this is the XML "public ID".
      * @param uri  Used when no alternate copy of the entity is found;
      *             this is the XML "system ID", normally a URI.
+     * @return resolved entity
+     * @throws IOException for errors
      */
     @Override
     public InputSource resolveEntity(String name, String uri)
@@ -300,7 +310,7 @@ public class Resolver implements EntityResolver {
 
         // prefer explicit URI mappings, then bundled resources...
         if (mappedURI == null && (stream = mapResource(name)) != null && id2resource != null) {
-            uri = "java:resource:" + (String) id2resource.get(name);
+            uri = "java:resource:" + id2resource.get(name);
             retval = new InputSource(XmlReader.createReader(stream));
 
             // ...and treat all URIs the same (as URLs for now).
@@ -336,6 +346,7 @@ public class Resolver implements EntityResolver {
      * Returns true if this resolver is ignoring MIME types in the documents
      * it returns, to work around bugs in how servers have reported the
      * documents' MIME types.
+     * @return true if this resolver is ignoring MIME types
      */
     public boolean isIgnoringMIME() {
         return ignoringMIME;
@@ -350,6 +361,7 @@ public class Resolver implements EntityResolver {
      * to use US-ASCII (a seven bit encoding).  For XML documents which
      * include text encoding declarations (as most should do), these server
      * bugs can be worked around by ignoring the MIME type entirely.
+     * @param value whether to ignore MIME types in the documents
      */
     public void setIgnoringMIME(boolean value) {
         ignoringMIME = value;
@@ -360,7 +372,7 @@ public class Resolver implements EntityResolver {
     private String name2uri(String publicId) {
         if (publicId == null || id2uri == null)
             return null;
-        return (String) id2uri.get(publicId);
+        return id2uri.get(publicId);
     }
 
 
@@ -377,7 +389,7 @@ public class Resolver implements EntityResolver {
     public void registerCatalogEntry(String publicId,
                                      String uri) {
         if (id2uri == null)
-            id2uri = new Hashtable(17);
+            id2uri = new HashMap<>(17);
         id2uri.put(publicId, uri);
     }
 
@@ -388,7 +400,7 @@ public class Resolver implements EntityResolver {
         if (publicId == null || id2resource == null)
             return null;
 
-        String resourceName = (String) id2resource.get(publicId);
+        String resourceName = id2resource.get(publicId);
         ClassLoader loader = null;
 
         if (resourceName == null)
@@ -396,7 +408,7 @@ public class Resolver implements EntityResolver {
         // System.out.println ("++ Resource: " + resourceName);
 
         if (id2loader != null)
-            loader = (ClassLoader) id2loader.get(publicId);
+            loader = id2loader.get(publicId);
         // System.out.println ("++ Loader: " + loader);
         if (loader == null)
             return ClassLoader.getSystemResourceAsStream(resourceName);
@@ -410,7 +422,7 @@ public class Resolver implements EntityResolver {
      * included in XML documents.  This mechanism should most typically be
      * used for Document Type Definitions (DTDs), where the public IDs are
      * formally managed and versioned.
-     * <p>
+     *
      * <P> If a mapping to a URI has been provided, that mapping takes
      * precedence over this one.
      *
@@ -423,12 +435,12 @@ public class Resolver implements EntityResolver {
                                      String resourceName,
                                      ClassLoader loader) {
         if (id2resource == null)
-            id2resource = new Hashtable(17);
+            id2resource = new HashMap<>(17);
         id2resource.put(publicId, resourceName);
 
         if (loader != null) {
             if (id2loader == null)
-                id2loader = new Hashtable(17);
+                id2loader = new HashMap<>(17);
             id2loader.put(publicId, loader);
         }
     }

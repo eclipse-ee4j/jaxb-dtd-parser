@@ -13,7 +13,7 @@
  */
 module com.sun.xml.dtdparser {
 
-    requires java.xml;
+    requires transitive java.xml;
     requires java.logging;
 
     exports com.sun.xml.dtdparser;

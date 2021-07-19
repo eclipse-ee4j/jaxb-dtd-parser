@@ -45,12 +45,12 @@ import java.util.Enumeration;
  *
  * @version $Revision: 1.2 $
  */
-final class SimpleHashtable implements Enumeration {
+final class SimpleHashtable<K, V> implements Enumeration<K> {
     // entries ...
-    private Entry table[];
+    private Entry<K, V> table[];
 
     // currently enumerated key
-    private Entry current = null;
+    private Entry<K, V> current = null;
     private int currentBucket = 0;
 
     private int count;
@@ -65,13 +65,14 @@ final class SimpleHashtable implements Enumeration {
      *
      * @param initialCapacity the initial capacity of the hashtable.
      */
+    @SuppressWarnings({"rawtypes","unchecked"})
     public SimpleHashtable(int initialCapacity) {
         if (initialCapacity < 0)
             throw new IllegalArgumentException("Illegal Capacity: " +
                     initialCapacity);
         if (initialCapacity == 0)
             initialCapacity = 1;
-        table = new Entry[initialCapacity];
+        table = (Entry<K, V>[]) new Entry[initialCapacity];
         threshold = (int) (initialCapacity * loadFactor);
     }
 
@@ -107,7 +108,7 @@ final class SimpleHashtable implements Enumeration {
      * @return an enumeration of the keys in this hashtable.
      * @see Enumeration
      */
-    public Enumeration keys() {
+    public Enumeration<K> keys() {
         currentBucket = 0;
         current = null;
         return this;
@@ -117,6 +118,7 @@ final class SimpleHashtable implements Enumeration {
      * Used to view this as an enumeration; returns true if there
      * are more keys to be enumerated.
      */
+    @Override
     public boolean hasMoreElements() {
         if (current != null)
             return true;
@@ -132,8 +134,9 @@ final class SimpleHashtable implements Enumeration {
      * Used to view this as an enumeration; returns the next key
      * in the enumeration.
      */
-    public Object nextElement() {
-        Object retval;
+    @Override
+    public K nextElement() {
+        K retval;
 
         if (current == null)
             throw new IllegalStateException();
@@ -146,11 +149,11 @@ final class SimpleHashtable implements Enumeration {
     /**
      * Returns the value to which the specified key is mapped in this hashtable.
      */
-    public Object get(String key) {
-        Entry tab[] = table;
+    public V get(String key) {
+        Entry<K, V> tab[] = table;
         int hash = key.hashCode();
         int index = (hash & 0x7FFFFFFF) % tab.length;
-        for (Entry e = tab[index]; e != null; e = e.next) {
+        for (Entry<K, V> e = tab[index]; e != null; e = e.next) {
             if ((e.hash == hash) && (e.key == key))
                 return e.value;
         }
@@ -161,11 +164,11 @@ final class SimpleHashtable implements Enumeration {
      * Returns the value to which the specified key is mapped in this
      * hashtable ... the key isn't necessarily interned, though.
      */
-    public Object getNonInterned(String key) {
-        Entry tab[] = table;
+    public V getNonInterned(String key) {
+        Entry<K, V> tab[] = table;
         int hash = key.hashCode();
         int index = (hash & 0x7FFFFFFF) % tab.length;
-        for (Entry e = tab[index]; e != null; e = e.next) {
+        for (Entry<K, V> e = tab[index]; e != null; e = e.next) {
             if ((e.hash == hash) && e.key.equals(key))
                 return e.value;
         }
@@ -181,10 +184,11 @@ final class SimpleHashtable implements Enumeration {
      */
     private void rehash() {
         int oldCapacity = table.length;
-        Entry oldMap[] = table;
+        Entry<K, V> oldMap[] = table;
 
         int newCapacity = oldCapacity * 2 + 1;
-        Entry newMap[] = new Entry[newCapacity];
+        @SuppressWarnings({"rawtypes","unchecked"})
+        Entry<K, V> newMap[] = (Entry<K, V>[]) new Entry[newCapacity];
 
         threshold = (int) (newCapacity * loadFactor);
         table = newMap;
@@ -197,8 +201,8 @@ final class SimpleHashtable implements Enumeration {
         */
 
         for (int i = oldCapacity; i-- > 0;) {
-            for (Entry old = oldMap[i]; old != null;) {
-                Entry e = old;
+            for (Entry<K, V> old = oldMap[i]; old != null;) {
+                Entry<K, V> e = old;
                 old = old.next;
 
                 int index = (e.hash & 0x7FFFFFFF) % newCapacity;
@@ -216,20 +220,20 @@ final class SimpleHashtable implements Enumeration {
      * <P>The value can be retrieved by calling the <code>get</code> method
      * with a key that is equal to the original key.
      */
-    public Object put(Object key, Object value) {
+    public V put(K key, V value) {
         // Make sure the value is not null
         if (value == null) {
             throw new NullPointerException();
         }
 
         // Makes sure the key is not already in the hashtable.
-        Entry tab[] = table;
+        Entry<K, V> tab[] = table;
         int hash = key.hashCode();
         int index = (hash & 0x7FFFFFFF) % tab.length;
-        for (Entry e = tab[index]; e != null; e = e.next) {
+        for (Entry<K, V> e = tab[index]; e != null; e = e.next) {
             // if ((e.hash == hash) && e.key.equals(key)) {
             if ((e.hash == hash) && (e.key == key)) {
-                Object old = e.value;
+                V old = e.value;
                 e.value = value;
                 return old;
             }
@@ -244,7 +248,7 @@ final class SimpleHashtable implements Enumeration {
         }
 
         // Creates the new entry.
-        Entry e = new Entry(hash, key, value, tab[index]);
+        Entry<K, V> e = new Entry<>(hash, key, value, tab[index]);
         tab[index] = e;
         count++;
         return null;
@@ -254,13 +258,13 @@ final class SimpleHashtable implements Enumeration {
     /**
      * Hashtable collision list.
      */
-    private static class Entry {
+    private static class Entry<K, V> {
         int hash;
-        Object key;
-        Object value;
-        Entry next;
+        K key;
+        V value;
+        Entry<K, V> next;
 
-        protected Entry(int hash, Object key, Object value, Entry next) {
+        protected Entry(int hash, K key, V value, Entry<K, V> next) {
             this.hash = hash;
             this.key = key;
             this.value = value;

@@ -13,8 +13,9 @@ package com.sun.xml.dtdparser;
 import java.io.InputStream;
 import java.text.FieldPosition;
 import java.text.MessageFormat;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -124,6 +125,9 @@ import java.util.ResourceBundle;
 abstract public class MessageCatalog {
     private String bundleName;
 
+    private MessageCatalog() {
+    }
+
     /**
      * Create a message catalog for use by classes in the same package
      * as the specified class.  This uses <em>Messages</em> resource
@@ -132,7 +136,7 @@ abstract public class MessageCatalog {
      *
      * @param packageMember Class whose package has localized messages
      */
-    protected MessageCatalog(Class packageMember) {
+    protected MessageCatalog(Class<?> packageMember) {
         this(packageMember, "Messages");
     }
 
@@ -145,7 +149,7 @@ abstract public class MessageCatalog {
      * @param packageMember Class whose package has localized messages
      * @param bundle        Name of a group of resource bundles
      */
-    private MessageCatalog(Class packageMember, String bundle) {
+    private MessageCatalog(Class<?> packageMember, String bundle) {
         int index;
 
         bundleName = packageMember.getName();
@@ -309,7 +313,7 @@ abstract public class MessageCatalog {
             // as are regular locale names with no variant ("de_CH").
             if (!(len == 2 || len == 5)) {
                 if (!didClone) {
-                    languages = (String[]) languages.clone();
+                    languages = languages.clone();
                     didClone = true;
                 }
                 languages[i] = null;
@@ -322,7 +326,7 @@ abstract public class MessageCatalog {
                 lang = lang.toLowerCase(Locale.ENGLISH);
                 if (lang != languages[i]) {
                     if (!didClone) {
-                        languages = (String[]) languages.clone();
+                        languages = languages.clone();
                         didClone = true;
                     }
                     languages[i] = lang;
@@ -339,7 +343,7 @@ abstract public class MessageCatalog {
             buf[3] = Character.toUpperCase(lang.charAt(3));
             buf[4] = Character.toUpperCase(lang.charAt(4));
             if (!didClone) {
-                languages = (String[]) languages.clone();
+                languages = languages.clone();
                 didClone = true;
             }
             languages[i] = new String(buf);
@@ -414,7 +418,7 @@ abstract public class MessageCatalog {
     // cache for isLanguageSupported(), below ... key is a language
     // or locale name, value is a Boolean
     //
-    private Hashtable cache = new Hashtable(5);
+    private Map<String, Boolean> cache = new HashMap<>(5);
 
 
     /**
@@ -443,10 +447,10 @@ abstract public class MessageCatalog {
         // Use previous results if possible.  We expect that the codebase
         // is immutable, so we never worry about changing the cache.
         //
-        Boolean value = (Boolean) cache.get(localeName);
+        Boolean value = cache.get(localeName);
 
         if (value != null)
-            return value.booleanValue();
+            return value;
 
         //
         // Try "language_country_variant", then "language_country",
@@ -463,7 +467,7 @@ abstract public class MessageCatalog {
                 Class.forName(name);
                 cache.put(localeName, Boolean.TRUE);
                 return true;
-            } catch (Exception e) {
+            } catch (ClassNotFoundException e) {
             }
 
             // ... then property files (only for ISO Latin/1 messages)

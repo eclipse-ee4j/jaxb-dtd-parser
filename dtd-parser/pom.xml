@@ -18,7 +18,7 @@
     <parent>
         <groupId>org.eclipse.ee4j</groupId>
         <artifactId>project</artifactId>
-        <version>1.0.6</version>
+        <version>1.0.7</version>
         <relativePath/>
     </parent>
 
@@ -69,15 +69,14 @@
     </mailingLists>
 
     <properties>
-        <copyright.exclude>${project.basedir}/copyright-exclude</copyright.exclude>
+        <copyright.exclude>${project.basedir}/../etc/copyright-exclude</copyright.exclude>
         <copyright.ignoreyear>false</copyright.ignoreyear>
         <copyright.scmonly>true</copyright.scmonly>
         <copyright.update>false</copyright.update>
-        <spotbugs.exclude>${project.basedir}/exclude.xml</spotbugs.exclude>
+        <spotbugs.exclude>${project.basedir}/../etc/spotbugs-exclude.xml</spotbugs.exclude>
         <spotbugs.skip>false</spotbugs.skip>
         <spotbugs.threshold>Low</spotbugs.threshold>
         <spotbugs.version>4.3.0</spotbugs.version>
-
         <legal.doc.source>${project.basedir}/..</legal.doc.source>
     </properties>
 
@@ -98,6 +97,10 @@
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
                     <version>${spotbugs.version}</version>
+                    <configuration>
+                        <skip>${spotbugs.skip}</skip>
+                        <threshold>${spotbugs.threshold}</threshold>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.glassfish.copyright</groupId>
@@ -107,7 +110,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.0.0-M3</version>
+                    <version>3.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -135,9 +138,9 @@
                     <version>3.3.0</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-gpg-plugin</artifactId>
-                    <version>1.6</version>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.7</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -147,14 +150,10 @@
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <configuration>
-                    <skip>${spotbugs.skip}</skip>
-                    <threshold>${spotbugs.threshold}</threshold>
                     <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-                    <excludeFilterFile>
-                        ${spotbugs.exclude}
-                    </excludeFilterFile>
                     <fork>true</fork>
-                    <jvmArgs>-Xms64m -Xmx256m</jvmArgs>
+                    <excludeFilterFile>${spotbugs.exclude}</excludeFilterFile>
+                    <failThreshold>High</failThreshold>
                 </configuration>
             </plugin>
             <plugin>
@@ -226,6 +225,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <release>9</release>
+                    <compilerArgs>
+                        <arg>-Xlint:all</arg>
+                    </compilerArgs>
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>
                 </configuration>
@@ -309,4 +311,33 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>default-report</id>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>

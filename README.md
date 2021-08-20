@@ -8,6 +8,9 @@
 
 # DTD Parser
 
+[![Build Status](https://github.com/eclipse-ee4j/jaxb-dtd-parser/actions/workflows/maven.yml/badge.svg?branch=master)](https://github.com/eclipse-ee4j/jaxb-dtd-parser/actions/workflows/maven.yml?branch=master)
+[![Jakarta Staging (Snapshots)](https://img.shields.io/nexus/s/https/jakarta.oss.sonatype.org/com.sun.xml.dtd-parser/dtd-parser.svg)](https://jakarta.oss.sonatype.org/content/repositories/staging/com/sun/xml/dtd-parser/dtd-parser/)
+
 SAX-like API for parsing XML DTDs.
 
 This project is part of [Eclipse Implementation of JAXB](https://projects.eclipse.org/projects/ee4j.jaxb-impl).

@@ -30,3 +30,4 @@ the terms of [Eclipse Contributor Agreement](http://www.eclipse.org/legal/ECA.ph
 
 * [Javadoc](https://javadoc.io/doc/com.sun.xml.dtd-parser/dtd-parser/latest/)
 * [Mailing list](https://accounts.eclipse.org/mailing-list/jaxb-impl-dev)
+* [Nightly build job](https://ci.eclipse.org/jaxb-impl/job/dtd-parser-master-build/)

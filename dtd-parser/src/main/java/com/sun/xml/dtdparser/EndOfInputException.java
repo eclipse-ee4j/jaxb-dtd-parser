@@ -13,5 +13,6 @@ package com.sun.xml.dtdparser;
 import java.io.IOException;
 
 class EndOfInputException extends IOException {
+    private static final long serialVersionUID = -5773369407565455545L;
 }
 

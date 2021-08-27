@@ -399,6 +399,7 @@ public class InputEntity {
      * @throws IOException for errors
      * @throws SAXException for errors
      */
+    @SuppressWarnings("fallthrough")
     public boolean parsedContent(DTDEventListener docHandler
                                  /*ElementValidator validator*/)
             throws IOException, SAXException {
@@ -720,6 +721,7 @@ public class InputEntity {
      * @throws IOException for errors
      * @throws SAXException for errors
      */
+    @SuppressWarnings("fallthrough")
     public boolean ignorableWhitespace(DTDEventListener handler)
             throws IOException, SAXException {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -29,7 +29,7 @@ public class XmlChars {
      * XML documents.  Unicode characters fit into the low sixteen
      * bits of a UCS-4 character, and pairs of Unicode <em>surrogate
      * characters</em> can be combined to encode UCS-4 characters in
-     * documents containing only Unicode.  (The <code>char</code> datatype
+     * documents containing only Unicode.  (The {@code char} datatype
      * in the Java Programming Language represents Unicode characters,
      * including unpaired surrogates.)
      *
@@ -72,11 +72,8 @@ public class XmlChars {
             return true;
         else if (c == '>')
             return false;
-        else if (c == '.' || c == '-' || c == '_' || c == ':'
-                || isExtender(c))
-            return true;
-        else
-            return false;
+        else return c == '.' || c == '-' || c == '_' || c == ':'
+                    || isExtender(c);
     }
 
     /**

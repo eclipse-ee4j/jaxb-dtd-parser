@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -53,7 +53,7 @@ import java.util.Map;
  * errors during parsing.</LI>
  *
  * <LI> The InputSource objects returned by this class always
- * have a <code>java.io.Reader</code> available as the "character
+ * have a {@code java.io.Reader} available as the "character
  * stream" property.</LI>
  *
  * </UL></LI>
@@ -97,7 +97,7 @@ public class Resolver implements EntityResolver {
     // not the subtle stuff ("text/html") that might actually
     // be (or become) safe.
     //
-    private static final String types [] = {
+    private static final String[] types = {
         "application/xml",
         "text/xml",
         "text/plain",

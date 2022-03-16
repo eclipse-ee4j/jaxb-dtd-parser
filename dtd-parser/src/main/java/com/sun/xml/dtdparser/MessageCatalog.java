@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -73,7 +73,7 @@ import java.util.ResourceBundle;
  * multi-language applications:</p>
  * <ol>
  * <li> Always use <a href=#chooseLocale>chooseLocale</a> to select the
- * locale you pass to your <code>getMessage</code> call.  This lets your
+ * locale you pass to your {@code getMessage} call.  This lets your
  * applications use IETF standard locale names, and avoids needless
  * use of system defaults.</li>
  *
@@ -95,7 +95,7 @@ import java.util.ResourceBundle;
  * be limited to the ISO Latin/1 (8859-1) characters supported by the
  * property file format.  (This is mostly Western European languages.)
  * Otherwise, subclass ResourceBundle to provide your messages; it is
- * simplest to subclass <code>java.util.ListResourceBundle</code>.</li>
+ * simplest to subclass {@code java.util.ListResourceBundle}.</li>
  *
  * <li> Never use another package's message catalog or resource bundles.
  * It should not be possible for a change internal to one package (such
@@ -213,7 +213,7 @@ abstract public class MessageCatalog {
      */
     public String getMessage(Locale locale,
                              String messageId,
-                             Object parameters []) {
+                             Object[] parameters) {
         if (parameters == null)
             return getMessage(locale, messageId);
 
@@ -281,7 +281,7 @@ abstract public class MessageCatalog {
      * @return The most preferable supported locale, or null.
      * @see java.util.Locale
      */
-    public Locale chooseLocale(String languages []) {
+    public Locale chooseLocale(String[] languages) {
         if ((languages = canonicalize(languages)) != null) {
             for (int i = 0; i < languages.length; i++)
                 if (isLocaleSupported(languages[i]))
@@ -298,7 +298,7 @@ abstract public class MessageCatalog {
     // memory allocations possible, so that if the strings passed in are
     // just lowercase ISO codes (a common case) the input is returned.
     //
-    private String[] canonicalize(String languages []) {
+    private String[] canonicalize(String[] languages) {
         boolean didClone = false;
         int trimCount = 0;
 
@@ -335,7 +335,7 @@ abstract public class MessageCatalog {
             }
 
             // language_country ... fixup case, force "_"
-            char buf [] = new char[5];
+            char[] buf = new char[5];
 
             buf[0] = Character.toLowerCase(lang.charAt(0));
             buf[1] = Character.toLowerCase(lang.charAt(1));
@@ -351,7 +351,7 @@ abstract public class MessageCatalog {
 
         // purge any shadows of deleted RFC1766 extended language codes
         if (trimCount != 0) {
-            String temp [] = new String[languages.length - trimCount];
+            String[] temp = new String[languages.length - trimCount];
             int i;
 
             for (i = 0, trimCount = 0; i < temp.length; i++) {
@@ -427,7 +427,7 @@ abstract public class MessageCatalog {
      * if there are message bundles suffixed with either "zh_TW" or "zh".
      *
      * <P> This method is used to bypass part of the search path mechanism
-     * of the <code>ResourceBundle</code> class, specifically the parts which
+     * of the {@code ResourceBundle} class, specifically the parts which
      * force use of default locales and bundles.  Such bypassing is required
      * in order to enable use of a client's preferred languages.  Following
      * the above example, if a client prefers "zh_TW" but can also accept

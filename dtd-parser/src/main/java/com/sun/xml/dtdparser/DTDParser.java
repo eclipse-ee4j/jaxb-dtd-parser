@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -64,9 +64,9 @@ public class DTDParser {
     private InputEntity in;
     // temporaries reused during parsing
     private StringBuffer strTmp;
-    private char nameTmp[];
+    private char[] nameTmp;
     private NameCache nameCache;
-    private char charTmp[] = new char[2];
+    private char[] charTmp = new char[2];
     // temporary DTD parsing state
     private boolean doLexicalPE;
     // DTD state, used during parsing
@@ -131,7 +131,7 @@ public class DTDParser {
      * @throws SAXException for errors
      * @see MessageCatalog
      */
-    public Locale chooseLocale(String languages[])
+    public Locale chooseLocale(String[] languages)
             throws SAXException {
 
         Locale l = messages.chooseLocale(languages);
@@ -162,7 +162,6 @@ public class DTDParser {
 
     /**
      * Used by applications to set handling of DTD parsing events.
-     * @param handler
      */
     public void setDtdHandler(DTDEventListener handler) {
         dtdHandler = handler;
@@ -201,7 +200,6 @@ public class DTDParser {
 
     /**
      * Parse a DTD.
-     * @param in
      * @throws IOException for errors
      * @throws SAXException for errors
      */
@@ -213,7 +211,6 @@ public class DTDParser {
 
     /**
      * Parse a DTD.
-     * @param uri
      * @throws IOException for errors
      * @throws SAXException for errors
      */
@@ -295,7 +292,6 @@ public class DTDParser {
     // relatively easy to get diagnostics that make sense.
     //
     ////////////////////////////////////////////////////////////////
-    @SuppressWarnings("CallToThreadDumpStack")
     private void parseInternal(InputSource input)
             throws IOException, SAXException {
 
@@ -318,7 +314,7 @@ public class DTDParser {
             externalParameterEntity(externalSubset);
 
             if (!in.isEOF()) {
-                fatal("P-001", new Object[]{Integer.toHexString(((int) getc()))});
+                fatal("P-001", new Object[]{Integer.toHexString(getc())});
             }
             afterRoot();
             dtdHandler.endDTD();
@@ -475,7 +471,7 @@ public class DTDParser {
                 break;
             }
             if (i >= nameTmp.length) {
-                char tmp[] = new char[nameTmp.length + 10];
+                char[] tmp = new char[nameTmp.length + 10];
                 System.arraycopy(nameTmp, 0, tmp, 0, nameTmp.length);
                 nameTmp = tmp;
             }
@@ -493,7 +489,6 @@ public class DTDParser {
     // or else partially normalized attribute value (the first bit
     // of 3.3.3's spec, without the "if not CDATA" bits).
     //
-    @SuppressWarnings("UnusedAssignment")
     private void parseLiteral(boolean isEntityValue)
             throws IOException, SAXException {
 
@@ -949,13 +944,13 @@ public class DTDParser {
     //
     // CHAPTER 3:  Logical Structures
     //
-    /**
+    /*
      * To validate, subclassers should at this time make sure that values are of
      * the declared types:<UL> <LI> ID and IDREF(S) values are Names <LI>
      * NMTOKEN(S) are Nmtokens <LI> ENUMERATION values match one of the tokens
      * <LI> NOTATION values match a notation name <LI> ENTITIY(IES) values match
      * an unparsed external entity </UL>
-     * <p>
+     *
      * <P> Separately, make sure IDREF values match some ID provided in the
      * document (in the afterRoot method).
      */
@@ -1449,9 +1444,7 @@ public class DTDParser {
                         fatal("P-068");
                     }
                     // permit deferred declarations
-                    if (notations.get(name) == null) {
-                        notations.put(name, name);
-                    }
+                    notations.putIfAbsent(name, name);
                     values.add(name);
                     maybeWhitespace();
                     if (peek("|")) {
@@ -1559,7 +1552,7 @@ public class DTDParser {
 ///            dtdHandler.attributeDecl(a);
 ///        }
 
-            String[] v = (values != null) ? values.toArray(new String[values.size()]) : null;
+            String[] v = (values != null) ? values.toArray(new String[0]) : null;
             dtdHandler.attributeDecl(elementName, attName, typeName, v, attributeUse, defaultValue);
             maybeWhitespace();
         }
@@ -1845,7 +1838,7 @@ public class DTDParser {
 
         // internal entities
         if (externalId == null) {
-            char value[];
+            char[] value;
             InternalEntity entity;
 
             doLexicalPE = false;        // "ab%bar;cd" -maybe-> "abcd"
@@ -1874,9 +1867,7 @@ public class DTDParser {
 
                 // flag undeclared notation for checking after
                 // the DTD is fully processed
-                if (notations.get(externalId.notation) == null) {
-                    notations.put(externalId.notation, Boolean.TRUE);
-                }
+                notations.putIfAbsent(externalId.notation, Boolean.TRUE);
             }
             externalId.name = entityName;
             externalId.isPE = (defns == params);
@@ -2114,7 +2105,7 @@ public class DTDParser {
         }
 
         Object value = notations.get(name);
-        if (value != null && value instanceof ExternalEntity) {
+        if (value instanceof ExternalEntity) {
             warning("P-063", new Object[]{name});
         } else {
             notations.put(name, entity);
@@ -2132,8 +2123,7 @@ public class DTDParser {
     private char getc() throws IOException, SAXException {
 
         if (!doLexicalPE) {
-            char c = in.getc();
-            return c;
+            return in.getc();
         }
 
         //
@@ -2235,7 +2225,7 @@ public class DTDParser {
         }
     }
 
-    private void pushReader(char buf[], String name, boolean isGeneral)
+    private void pushReader(char[] buf, String name, boolean isGeneral)
             throws SAXException {
 
         InputEntity r = InputEntity.getInputEntity(dtdHandler, locale);
@@ -2243,7 +2233,7 @@ public class DTDParser {
         in = r;
     }
 
-    private boolean pushReader(ExternalEntity next)
+    private void pushReader(ExternalEntity next)
             throws IOException, SAXException {
 
         InputEntity r = InputEntity.getInputEntity(dtdHandler, locale);
@@ -2265,7 +2255,6 @@ public class DTDParser {
 
         r.init(s, next.name, in, next.isPE);
         in = r;
-        return true;
     }
 
     public String getPublicId() {
@@ -2289,7 +2278,7 @@ public class DTDParser {
     }
 
     // error handling convenience routines
-    private void warning(String messageId, Object parameters[])
+    private void warning(String messageId, Object[] parameters)
             throws SAXException {
 
         SAXParseException e = new SAXParseException(messages.getMessage(locale, messageId, parameters),
@@ -2298,7 +2287,7 @@ public class DTDParser {
         dtdHandler.warning(e);
     }
 
-    void error(String messageId, Object parameters[])
+    void error(String messageId, Object[] parameters)
             throws SAXException {
 
         SAXParseException e = new SAXParseException(messages.getMessage(locale, messageId, parameters),
@@ -2312,7 +2301,7 @@ public class DTDParser {
         fatal(messageId, null);
     }
 
-    private void fatal(String messageId, Object parameters[])
+    private void fatal(String messageId, Object[] parameters)
             throws SAXException {
 
         SAXParseException e = new SAXParseException(messages.getMessage(locale, messageId, parameters),
@@ -2340,12 +2329,12 @@ public class DTDParser {
         // penalty is just excess cache collisions.
         //
 
-        NameCacheEntry hashtable[] = new NameCacheEntry[541];
+        NameCacheEntry[] hashtable = new NameCacheEntry[541];
 
         //
         // Usually we just want to get the 'symbol' for these chars
         //
-        String lookup(char value[], int len) {
+        String lookup(char[] value, int len) {
 
             return lookupEntry(value, len).name;
         }
@@ -2355,7 +2344,7 @@ public class DTDParser {
         // string, so there's an accessor which exposes them.
         // (Mostly for element end tags.)
         //
-        NameCacheEntry lookupEntry(char value[], int len) {
+        NameCacheEntry lookupEntry(char[] value, int len) {
 
             int index = 0;
             NameCacheEntry entry;
@@ -2396,10 +2385,10 @@ public class DTDParser {
     static class NameCacheEntry {
 
         String name;
-        char chars[];
+        char[] chars;
         NameCacheEntry next;
 
-        boolean matches(char value[], int len) {
+        boolean matches(char[] value, int len) {
             if (chars == null || chars.length != len) {
                 return false;
             }

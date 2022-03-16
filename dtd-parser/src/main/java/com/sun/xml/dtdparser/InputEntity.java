@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -42,7 +42,7 @@ import java.util.Locale;
  */
 public class InputEntity {
     private int start, finish;
-    private char buf [];
+    private char[] buf;
     private int lineNumber = 1;
     private boolean returnedFirstHalf = false;
     private boolean maybeInCRLF = false;
@@ -74,7 +74,7 @@ public class InputEntity {
     // nicely sized as we can make them.
     final private static int BUFSIZ = 8 * 1024 + 1;
 
-    final private static char newline [] = {'\n'};
+    final private static char[] newline = {'\n'};
 
     public static InputEntity getInputEntity(DTDEventListener h, Locale l) {
         InputEntity retval = new InputEntity();
@@ -134,7 +134,7 @@ public class InputEntity {
             InputStream bytes = in.getByteStream();
 
             if (bytes == null)
-                if (Boolean.valueOf(System.getProperty("enableExternalEntityProcessing")))
+                if (Boolean.getBoolean("enableExternalEntityProcessing"))
                     reader = XmlReader.createReader(new URL(in.getSystemId()).openStream());
                 else
                     fatal("P-082", new Object[] {in.getSystemId()});
@@ -152,7 +152,7 @@ public class InputEntity {
     //
     // use this for an internal parsed entity; buffer is readonly
     //
-    public void init(char b [], String name, InputEntity stack, boolean isPE)
+    public void init(char[] b, String name, InputEntity stack, boolean isPE)
             throws SAXException {
 
         next = stack;
@@ -183,7 +183,6 @@ public class InputEntity {
 
     /**
      * returns true iff there's no more data to consume ...
-     * @return
      * @throws IOException for errors
      * @throws SAXException for errors
      */
@@ -344,7 +343,6 @@ public class InputEntity {
 
     /**
      * optional grammatical whitespace (discarded)
-     * @return
      * @throws IOException for errors
      * @throws SAXException for errors
      */
@@ -394,8 +392,6 @@ public class InputEntity {
      *
      * <P> the document handler's characters() method is called
      * on all the content found
-     * @param docHandler
-     * @return
      * @throws IOException for errors
      * @throws SAXException for errors
      */
@@ -570,7 +566,6 @@ public class InputEntity {
      *                                 non-whitespace characters will cause validation errors
      * @param whitespaceInvalidMessage if true, ignorable whitespace
      *                                 causes a validity error report as well as a callback
-     * @return
      * @throws IOException for errors
      * @throws SAXException for errors
      */
@@ -716,8 +711,6 @@ public class InputEntity {
      *
      * <P> the document handler's ignorableWhitespace() method
      * is called on all the whitespace found
-     * @param handler
-     * @return
      * @throws IOException for errors
      * @throws SAXException for errors
      */
@@ -779,12 +772,11 @@ public class InputEntity {
      *
      * <P> NOTE:  two alternative string representations are
      * both passed in, since one is faster.
-     * @param chars
      * @return false iff 'next' string isn't as provided
      * @throws IOException for errors
      * @throws SAXException for errors
      */
-    public boolean peek(String next, char chars [])
+    public boolean peek(String next, char[] chars)
             throws IOException, SAXException {
 
         int len;
@@ -1003,7 +995,7 @@ public class InputEntity {
     }
 
 
-    private void fatal(String messageId, Object params [])
+    private void fatal(String messageId, Object[] params)
             throws SAXException {
 
         SAXParseException x = new SAXParseException(DTDParser.messages.getMessage(locale, messageId, params), null);

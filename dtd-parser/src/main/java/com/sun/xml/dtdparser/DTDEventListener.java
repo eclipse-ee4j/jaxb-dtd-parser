@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -21,7 +21,7 @@ import java.util.EventListener;
  */
 public interface DTDEventListener extends EventListener {
 
-    public void setDocumentLocator(Locator loc);
+    void setDocumentLocator(Locator loc);
 
     /**
      * Receive notification of a Processing Instruction.
@@ -34,7 +34,7 @@ public interface DTDEventListener extends EventListener {
      *               valid XML characters.
      * @throws SAXException for errors
      */
-    public void processingInstruction(String target, String data)
+    void processingInstruction(String target, String data)
             throws SAXException;
 
     /**
@@ -48,7 +48,7 @@ public interface DTDEventListener extends EventListener {
      * @param systemId The system identifier
      * @throws SAXException for errors
      */
-    public void notationDecl(String name, String publicId, String systemId)
+    void notationDecl(String name, String publicId, String systemId)
             throws SAXException;
 
     /**
@@ -61,8 +61,8 @@ public interface DTDEventListener extends EventListener {
      * @param notationName The associated notation
      * @throws SAXException for errors
      */
-    public void unparsedEntityDecl(String name, String publicId,
-                                   String systemId, String notationName)
+    void unparsedEntityDecl(String name, String publicId,
+                            String systemId, String notationName)
             throws SAXException;
 
     /**
@@ -75,7 +75,7 @@ public interface DTDEventListener extends EventListener {
      * @throws SAXException for errors
      * @see #externalGeneralEntityDecl(String, String, String)
      */
-    public void internalGeneralEntityDecl(String name, String value)
+    void internalGeneralEntityDecl(String name, String value)
             throws SAXException;
 
     /**
@@ -93,8 +93,8 @@ public interface DTDEventListener extends EventListener {
      * @throws SAXException for errors
      * @see #unparsedEntityDecl(String, String, String, String)
      */
-    public void externalGeneralEntityDecl(String name, String publicId,
-                                          String systemId)
+    void externalGeneralEntityDecl(String name, String publicId,
+                                   String systemId)
             throws SAXException;
 
     /**
@@ -108,7 +108,7 @@ public interface DTDEventListener extends EventListener {
      * @throws SAXException for errors
      * @see #externalParameterEntityDecl(String, String, String)
      */
-    public void internalParameterEntityDecl(String name, String value)
+    void internalParameterEntityDecl(String name, String value)
             throws SAXException;
 
     /**
@@ -126,8 +126,8 @@ public interface DTDEventListener extends EventListener {
      * @throws SAXException for errors
      * @see #unparsedEntityDecl(String, String, String, String)
      */
-    public void externalParameterEntityDecl(String name, String publicId,
-                                            String systemId)
+    void externalParameterEntityDecl(String name, String publicId,
+                                     String systemId)
             throws SAXException;
 
     /**
@@ -137,7 +137,7 @@ public interface DTDEventListener extends EventListener {
      * @throws SAXException for errors
      * @see #endDTD()
      */
-    public void startDTD(InputEntity in)
+    void startDTD(InputEntity in)
             throws SAXException;
 
     /**
@@ -147,7 +147,7 @@ public interface DTDEventListener extends EventListener {
      * @throws SAXException for errors
      * @see #startDTD(InputEntity)
      */
-    public void endDTD()
+    void endDTD()
             throws SAXException;
 
     /**
@@ -162,7 +162,7 @@ public interface DTDEventListener extends EventListener {
      * @param text the text within the comment delimiters.
      * @throws SAXException for errors
      */
-    public void comment(String text)
+    void comment(String text)
             throws SAXException;
 
     /**
@@ -188,7 +188,7 @@ public interface DTDEventListener extends EventListener {
      * @throws SAXException for errors
      * @see #ignorableWhitespace(char[], int, int)
      */
-    public void characters(char ch[], int start, int length)
+    void characters(char[] ch, int start, int length)
             throws SAXException;
 
 
@@ -215,7 +215,7 @@ public interface DTDEventListener extends EventListener {
      * @throws SAXException for errors
      * @see #characters(char[], int, int)
      */
-    public void ignorableWhitespace(char ch[], int start, int length)
+    void ignorableWhitespace(char[] ch, int start, int length)
             throws SAXException;
 
     /**
@@ -226,7 +226,7 @@ public interface DTDEventListener extends EventListener {
      * @throws SAXException for errors
      * @see #endCDATA()
      */
-    public void startCDATA() throws SAXException;
+    void startCDATA() throws SAXException;
 
 
     /**
@@ -235,20 +235,20 @@ public interface DTDEventListener extends EventListener {
      * @throws SAXException for errors
      * @see #startCDATA()
      */
-    public void endCDATA() throws SAXException;
+    void endCDATA() throws SAXException;
 
 
-    public void fatalError(SAXParseException e)
+    void fatalError(SAXParseException e)
             throws SAXException;
 
-    public void error(SAXParseException e) throws SAXException;
+    void error(SAXParseException e) throws SAXException;
 
-    public void warning(SAXParseException err) throws SAXException;
+    void warning(SAXParseException err) throws SAXException;
 
-    public final short CONTENT_MODEL_EMPTY = 0;
-    public final short CONTENT_MODEL_ANY = 1;
-    public final short CONTENT_MODEL_MIXED = 2;
-    public final short CONTENT_MODEL_CHILDREN = 3;
+    short CONTENT_MODEL_EMPTY = 0;
+    short CONTENT_MODEL_ANY = 1;
+    short CONTENT_MODEL_MIXED = 2;
+    short CONTENT_MODEL_CHILDREN = 3;
 
     /**
      * receives notification that parsing of content model is beginning.
@@ -274,20 +274,18 @@ public interface DTDEventListener extends EventListener {
      *                         | MODEL_GROUP
      * @throws SAXException for errors
      */
-    public void startContentModel(String elementName, short contentModelType) throws SAXException;
+    void startContentModel(String elementName, short contentModelType) throws SAXException;
 
     /**
      * receives notification that parsing of content model is finished.
-     * @param elementName
-     * @param contentModelType
      * @throws SAXException for errors
      */
-    public void endContentModel(String elementName, short contentModelType) throws SAXException;
+    void endContentModel(String elementName, short contentModelType) throws SAXException;
 
-    public final short USE_NORMAL = 0;
-    public final short USE_IMPLIED = 1;
-    public final short USE_FIXED = 2;
-    public final short USE_REQUIRED = 3;
+    short USE_NORMAL = 0;
+    short USE_IMPLIED = 1;
+    short USE_FIXED = 2;
+    short USE_REQUIRED = 3;
 
     /**
      * For each entry in an ATTLIST declaration,
@@ -298,47 +296,39 @@ public interface DTDEventListener extends EventListener {
      * once, and in that case the first one wins. I think
      * this method will be only fired for the first one,
      * but I need to check.
-     * @param elementName
-     * @param attributeName
-     * @param defaultValue
-     * @param enumeration
-     * @param attributeUse
-     * @param attributeType
      * @throws SAXException for errors
      */
-    public void attributeDecl(String elementName, String attributeName, String attributeType,
-                              String[] enumeration, short attributeUse, String defaultValue) throws SAXException;
+    void attributeDecl(String elementName, String attributeName, String attributeType,
+                       String[] enumeration, short attributeUse, String defaultValue) throws SAXException;
 
-    public void childElement(String elementName, short occurence) throws SAXException;
+    void childElement(String elementName, short occurence) throws SAXException;
 
     /**
      * receives notification of child element of mixed content model.this method is called for each child element.
      *
-     * @param elementName
      * @throws SAXException for errors
      * @see #startContentModel(String, short)
      */
-    public void mixedElement(String elementName) throws SAXException;
+    void mixedElement(String elementName) throws SAXException;
 
-    public void startModelGroup() throws SAXException;
+    void startModelGroup() throws SAXException;
 
-    public void endModelGroup(short occurence) throws SAXException;
+    void endModelGroup(short occurence) throws SAXException;
 
-    public final short CHOICE = 0;
-    public final short SEQUENCE = 1;
+    short CHOICE = 0;
+    short SEQUENCE = 1;
 
     /**
      * Connectors in one model group is guaranteed to be the same.
      *
      * <p>
      * IOW, you'll never see an event sequence like (a|b,c)
-     * @param connectorType
      * @throws SAXException for errors
      */
-    public void connector(short connectorType) throws SAXException;
+    void connector(short connectorType) throws SAXException;
 
-    public final short OCCURENCE_ZERO_OR_MORE = 0;
-    public final short OCCURENCE_ONE_OR_MORE = 1;
-    public final short OCCURENCE_ZERO_OR_ONE = 2;
-    public final short OCCURENCE_ONCE = 3;
+    short OCCURENCE_ZERO_OR_MORE = 0;
+    short OCCURENCE_ONE_OR_MORE = 1;
+    short OCCURENCE_ZERO_OR_ONE = 2;
+    short OCCURENCE_ONCE = 3;
 }

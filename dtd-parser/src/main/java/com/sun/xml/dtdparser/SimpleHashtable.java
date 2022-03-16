@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -10,6 +10,7 @@
 
 package com.sun.xml.dtdparser;
 
+import java.util.Arrays;
 import java.util.Enumeration;
 
 
@@ -19,27 +20,27 @@ import java.util.Enumeration;
 
 /**
  * This class implements a special purpose hashtable.  It works like a
- * normal <code>java.util.Hashtable</code> except that: <OL>
- * <p/>
+ * normal {@code java.util.Hashtable} except that: <OL>
+ *
  * <LI> Keys to "get" are strings which are known to be interned,
  * so that "==" is used instead of "String.equals".  (Interning
  * could be document-relative instead of global.)
- * <p/>
+ *
  * <LI> It's not synchronized, since it's to be used only by
  * one thread at a time.
- * <p/>
+ *
  * <LI> The keys () enumerator allocates no memory, with live
  * updates to the data disallowed.
- * <p/>
+ *
  * <LI> It's got fewer bells and whistles:  fixed threshold and
  * load factor, no JDK 1.2 collection support, only keys can be
  * enumerated, things can't be removed, simpler inheritance; more.
- * <p/>
+ *
  * </OL>
- * <p/>
+ *
  * <P> The overall result is that it's less expensive to use these in
  * performance-critical locations, in terms both of CPU and memory,
- * than <code>java.util.Hashtable</code> instances.  In this package
+ * than {@code java.util.Hashtable} instances.  In this package
  * it makes a significant difference when normalizing attributes,
  * which is done for each start-element construct.
  *
@@ -47,7 +48,7 @@ import java.util.Enumeration;
  */
 final class SimpleHashtable<K, V> implements Enumeration<K> {
     // entries ...
-    private Entry<K, V> table[];
+    private Entry<K, V>[] table;
 
     // currently enumerated key
     private Entry<K, V> current = null;
@@ -89,8 +90,7 @@ final class SimpleHashtable<K, V> implements Enumeration<K> {
         count = 0;
         currentBucket = 0;
         current = null;
-        for (int i = 0; i < table.length; i++)
-            table[i] = null;
+        Arrays.fill(table, null);
     }
 
     /**
@@ -150,7 +150,7 @@ final class SimpleHashtable<K, V> implements Enumeration<K> {
      * Returns the value to which the specified key is mapped in this hashtable.
      */
     public V get(String key) {
-        Entry<K, V> tab[] = table;
+        Entry<K, V>[] tab = table;
         int hash = key.hashCode();
         int index = (hash & 0x7FFFFFFF) % tab.length;
         for (Entry<K, V> e = tab[index]; e != null; e = e.next) {
@@ -165,7 +165,7 @@ final class SimpleHashtable<K, V> implements Enumeration<K> {
      * hashtable ... the key isn't necessarily interned, though.
      */
     public V getNonInterned(String key) {
-        Entry<K, V> tab[] = table;
+        Entry<K, V>[] tab = table;
         int hash = key.hashCode();
         int index = (hash & 0x7FFFFFFF) % tab.length;
         for (Entry<K, V> e = tab[index]; e != null; e = e.next) {
@@ -184,11 +184,11 @@ final class SimpleHashtable<K, V> implements Enumeration<K> {
      */
     private void rehash() {
         int oldCapacity = table.length;
-        Entry<K, V> oldMap[] = table;
+        Entry<K, V>[] oldMap = table;
 
         int newCapacity = oldCapacity * 2 + 1;
-        @SuppressWarnings({"rawtypes","unchecked"})
-        Entry<K, V> newMap[] = (Entry<K, V>[]) new Entry[newCapacity];
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        Entry<K, V>[] newMap = (Entry<K, V>[]) new Entry[newCapacity];
 
         threshold = (int) (newCapacity * loadFactor);
         table = newMap;
@@ -213,11 +213,11 @@ final class SimpleHashtable<K, V> implements Enumeration<K> {
     }
 
     /**
-     * Maps the specified <code>key</code> to the specified
-     * <code>value</code> in this hashtable. Neither the key nor the
-     * value can be <code>null</code>.
-     * <p/>
-     * <P>The value can be retrieved by calling the <code>get</code> method
+     * Maps the specified {@code key} to the specified
+     * {@code value} in this hashtable. Neither the key nor the
+     * value can be {@code null}.
+     *
+     * <P>The value can be retrieved by calling the {@code get} method
      * with a key that is equal to the original key.
      */
     public V put(K key, V value) {
@@ -227,7 +227,7 @@ final class SimpleHashtable<K, V> implements Enumeration<K> {
         }
 
         // Makes sure the key is not already in the hashtable.
-        Entry<K, V> tab[] = table;
+        Entry<K, V>[] tab = table;
         int hash = key.hashCode();
         int index = (hash & 0x7FFFFFFF) % tab.length;
         for (Entry<K, V> e = tab[index]; e != null; e = e.next) {

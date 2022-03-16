@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -34,11 +34,11 @@ import java.util.Map;
  * for interoperability; the latter is needed to conform with the XML
  * spec.  This class also optimizes reading some common encodings by
  * providing low-overhead unsynchronized Reader support.
- * <p/>
+ *
  * <P> Note that the autodetection facility should be used only on
  * data streams which have an unknown character encoding.  For example,
  * it should never be used on MIME text/xml entities.
- * <p/>
+ *
  * <P> Note that XML processors are only required to support UTF-8 and
  * UTF-16 character encodings.  Autodetection permits the underlying Java
  * implementation to provide support for many other encodings, such as
@@ -181,7 +181,7 @@ final class XmlReader extends Reader {
         super(stream);
 
         PushbackInputStream pb;
-        byte buf [];
+        byte[] buf;
         int len;
 
         if (stream instanceof PushbackInputStream)
@@ -288,7 +288,7 @@ final class XmlReader extends Reader {
      */
     private void useEncodingDecl(PushbackInputStream pb, String encoding)
             throws IOException {
-        byte buffer [] = new byte[MAXPUSHBACK];
+        byte[] buffer = new byte[MAXPUSHBACK];
         int len;
         Reader r;
         int c;
@@ -426,7 +426,7 @@ final class XmlReader extends Reader {
      * Reads the number of characters read into the buffer, or -1 on EOF.
      */
     @Override
-    public int read(char buf [], int off, int len) throws IOException {
+    public int read(char[] buf, int off, int len) throws IOException {
         int val;
 
         if (closed)
@@ -457,7 +457,7 @@ final class XmlReader extends Reader {
      */
     @Override
     public boolean markSupported() {
-        return in == null ? false : in.markSupported();
+        return in != null && in.markSupported();
     }
 
     /**
@@ -492,7 +492,7 @@ final class XmlReader extends Reader {
      */
     @Override
     public boolean ready() throws IOException {
-        return in == null ? false : in.ready();
+        return in != null && in.ready();
     }
 
     /**
@@ -517,7 +517,7 @@ final class XmlReader extends Reader {
     //
     static abstract class BaseReader extends Reader {
         protected InputStream instream;
-        protected byte buffer [];
+        protected byte[] buffer;
         protected int start, finish;
 
         BaseReader(InputStream stream) {
@@ -561,7 +561,7 @@ final class XmlReader extends Reader {
         }
 
         @Override
-        public int read(char buf [], int offset, int len) throws IOException {
+        public int read(char[] buf, int offset, int len) throws IOException {
             int i = 0, c = 0;
 
             if (len <= 0)
@@ -724,7 +724,7 @@ final class XmlReader extends Reader {
         }
 
         @Override
-        public int read(char buf [], int offset, int len) throws IOException {
+        public int read(char[] buf, int offset, int len) throws IOException {
             int i, c;
 
             if (instream == null)
@@ -758,7 +758,7 @@ final class XmlReader extends Reader {
         }
 
         @Override
-        public int read(char buf [], int offset, int len) throws IOException {
+        public int read(char[] buf, int offset, int len) throws IOException {
             int i;
 
             if (instream == null)

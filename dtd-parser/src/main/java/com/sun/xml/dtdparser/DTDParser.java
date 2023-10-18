@@ -86,7 +86,6 @@ public class DTDParser {
     static final String strANY = "ANY";
     static final String strEMPTY = "EMPTY";
 
-    private static final Logger LOGGER = Logger.getLogger(DTDParser.class.getName());
 
     /**
      * Constructs a DTDParser.
@@ -330,7 +329,6 @@ public class DTDParser {
                 fatal("P-003", null);
             }
         } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "Internal DTD parser error.", e);
             throw new SAXParseException(e.getMessage() != null
                     ? e.getMessage() : e.getClass().getName(),
                     getPublicId(), getSystemId(),
@@ -1514,8 +1512,10 @@ public class DTDParser {
 // TODO: implement this check
 ///            if (a.type() != Attribute.CDATA)
 ///                validateAttributeSyntax (a, a.defaultValue());
-            } else if (!peek("#IMPLIED")) {
+            } else if (peek("#IMPLIED")) {
                 attributeUse = DTDEventListener.USE_IMPLIED;
+            } else {
+                attributeUse = DTDEventListener.USE_NORMAL;
 
 ///            if (a.type() == Attribute.ID)
                 if (typeName == TYPE_ID) {
@@ -1535,9 +1535,6 @@ public class DTDParser {
 // TODO: implement this check
 ///            if (a.type() != Attribute.CDATA)
 ///                validateAttributeSyntax (a, a.defaultValue());
-            } else {
-                // TODO: this looks like an fatal error.
-                attributeUse = DTDEventListener.USE_NORMAL;
             }
 
             if (XML_LANG.equals(attName)

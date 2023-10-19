@@ -47,7 +47,6 @@ import java.util.logging.Logger;
  * @author David Brownell
  * @author Janet Koenig
  * @author Kohsuke KAWAGUCHI
- * @version $Id: DTDParser.java,v 1.2 2009-04-16 15:25:49 snajper Exp $
  */
 public class DTDParser {
 

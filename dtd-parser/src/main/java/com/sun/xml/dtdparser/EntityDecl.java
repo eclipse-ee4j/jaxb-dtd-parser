@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -15,7 +15,6 @@ package com.sun.xml.dtdparser;
  *
  * @author David Brownell
  * @author Janet Koenig
- * @version 1.3 00/02/24
  */
 class EntityDecl {
     String name;        // <!ENTITY name ... >

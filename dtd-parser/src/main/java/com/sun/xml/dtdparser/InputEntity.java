@@ -38,7 +38,6 @@ import java.util.Locale;
  *
  * @author David Brownell
  * @author Janet Koenig
- * @version 1.4 00/08/05
  */
 public class InputEntity {
     private int start, finish;

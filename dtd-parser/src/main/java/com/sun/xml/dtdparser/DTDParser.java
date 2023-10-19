@@ -1276,19 +1276,19 @@ public class DTDParser {
 
         if (c == '?') {
             strTmp.append(c);
-            return DTDEventListener.OCCURENCE_ZERO_OR_ONE;
+            return DTDEventListener.OCCURRENCE_ZERO_OR_ONE;
             //        original.setRepeat(Repeat.ZERO_OR_ONE);
         } else if (c == '+') {
             strTmp.append(c);
-            return DTDEventListener.OCCURENCE_ONE_OR_MORE;
+            return DTDEventListener.OCCURRENCE_ONE_OR_MORE;
             //        original.setRepeat(Repeat.ONE_OR_MORE);
         } else if (c == '*') {
             strTmp.append(c);
-            return DTDEventListener.OCCURENCE_ZERO_OR_MORE;
+            return DTDEventListener.OCCURRENCE_ZERO_OR_MORE;
             //        original.setRepeat(Repeat.ZERO_OR_MORE);
         } else {
             ungetc();
-            return DTDEventListener.OCCURENCE_ONCE;
+            return DTDEventListener.OCCURRENCE_ONCE;
         }
     }
 

@@ -327,8 +327,32 @@ public interface DTDEventListener extends EventListener {
      */
     void connector(short connectorType) throws SAXException;
 
-    short OCCURENCE_ZERO_OR_MORE = 0;
-    short OCCURENCE_ONE_OR_MORE = 1;
-    short OCCURENCE_ZERO_OR_ONE = 2;
-    short OCCURENCE_ONCE = 3;
+    short OCCURRENCE_ZERO_OR_MORE = 0;
+    short OCCURRENCE_ONE_OR_MORE = 1;
+    short OCCURRENCE_ZERO_OR_ONE = 2;
+    short OCCURRENCE_ONCE = 3;
+
+    /**
+     * @deprecated Use {@link #OCCURRENCE_ZERO_OR_MORE} instead.
+     */
+    @Deprecated(since = "1.5.1", forRemoval = true)
+    short OCCURENCE_ZERO_OR_MORE = OCCURRENCE_ZERO_OR_MORE;
+
+    /**
+     * @deprecated Use {@link #OCCURRENCE_ONE_OR_MORE} instead.
+     */
+    @Deprecated(since = "1.5.1", forRemoval = true)
+    short OCCURENCE_ONE_OR_MORE = OCCURRENCE_ONE_OR_MORE;
+
+    /**
+     * @deprecated Use {@link #OCCURRENCE_ZERO_OR_ONE} instead.
+     */
+    @Deprecated(since = "1.5.1", forRemoval = true)
+    short OCCURENCE_ZERO_OR_ONE = OCCURRENCE_ZERO_OR_ONE;
+
+    /**
+     * @deprecated Use {@link #OCCURRENCE_ONCE} instead.
+     */
+    @Deprecated(since = "1.5.1", forRemoval = true)
+    short OCCURENCE_ONCE = OCCURRENCE_ONCE;
 }

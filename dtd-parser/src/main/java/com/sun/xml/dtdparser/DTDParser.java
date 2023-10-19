@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -1514,8 +1514,10 @@ public class DTDParser {
 // TODO: implement this check
 ///            if (a.type() != Attribute.CDATA)
 ///                validateAttributeSyntax (a, a.defaultValue());
-            } else if (!peek("#IMPLIED")) {
+            } else if (peek("#IMPLIED")) {
                 attributeUse = DTDEventListener.USE_IMPLIED;
+            } else {
+                attributeUse = DTDEventListener.USE_NORMAL;
 
 ///            if (a.type() == Attribute.ID)
                 if (typeName == TYPE_ID) {
@@ -1535,9 +1537,6 @@ public class DTDParser {
 // TODO: implement this check
 ///            if (a.type() != Attribute.CDATA)
 ///                validateAttributeSyntax (a, a.defaultValue());
-            } else {
-                // TODO: this looks like an fatal error.
-                attributeUse = DTDEventListener.USE_NORMAL;
             }
 
             if (XML_LANG.equals(attName)

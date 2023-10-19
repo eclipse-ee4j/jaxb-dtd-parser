@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -86,6 +86,7 @@ public class DTDParser {
     static final String strANY = "ANY";
     static final String strEMPTY = "EMPTY";
 
+    private static final Logger LOGGER = Logger.getLogger(DTDParser.class.getName());
 
     /**
      * Constructs a DTDParser.
@@ -329,6 +330,7 @@ public class DTDParser {
                 fatal("P-003", null);
             }
         } catch (RuntimeException e) {
+            LOGGER.log(Level.SEVERE, "Internal DTD parser error.", e);
             throw new SAXParseException(e.getMessage() != null
                     ? e.getMessage() : e.getClass().getName(),
                     getPublicId(), getSystemId(),

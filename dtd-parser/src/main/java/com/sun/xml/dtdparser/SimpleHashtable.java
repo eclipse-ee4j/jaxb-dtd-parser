@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -35,7 +35,6 @@ import java.util.Enumeration;
  * <LI> It's got fewer bells and whistles:  fixed threshold and
  * load factor, no JDK 1.2 collection support, only keys can be
  * enumerated, things can't be removed, simpler inheritance; more.
- *
  * </OL>
  *
  * <P> The overall result is that it's less expensive to use these in
@@ -73,7 +72,7 @@ final class SimpleHashtable<K, V> implements Enumeration<K> {
                     initialCapacity);
         if (initialCapacity == 0)
             initialCapacity = 1;
-        table = (Entry<K, V>[]) new Entry[initialCapacity];
+        table = new Entry[initialCapacity];
         threshold = (int) (initialCapacity * loadFactor);
     }
 
@@ -179,7 +178,7 @@ final class SimpleHashtable<K, V> implements Enumeration<K> {
      * Increases the capacity of and internally reorganizes this
      * hashtable, in order to accommodate and access its entries more
      * efficiently.  This method is called automatically when the
-     * number of keys in the hashtable exceeds this hashtable's capacity
+     * number of keys in the hashtable exceeds this hashtable capacity
      * and load factor.
      */
     private void rehash() {
@@ -188,7 +187,7 @@ final class SimpleHashtable<K, V> implements Enumeration<K> {
 
         int newCapacity = oldCapacity * 2 + 1;
         @SuppressWarnings({"unchecked", "rawtypes"})
-        Entry<K, V>[] newMap = (Entry<K, V>[]) new Entry[newCapacity];
+        Entry<K, V>[] newMap = new Entry[newCapacity];
 
         threshold = (int) (newCapacity * loadFactor);
         table = newMap;

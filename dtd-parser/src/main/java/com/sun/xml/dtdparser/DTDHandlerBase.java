@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -115,7 +115,7 @@ public class DTDHandlerBase implements DTDEventListener {
     }
 
     @Override
-    public void childElement(String elementName, short occurence) throws SAXException {
+    public void childElement(String elementName, short occurrence) throws SAXException {
     }
 
     @Override
@@ -127,7 +127,7 @@ public class DTDHandlerBase implements DTDEventListener {
     }
 
     @Override
-    public void endModelGroup(short occurence) throws SAXException {
+    public void endModelGroup(short occurrence) throws SAXException {
     }
 
     @Override

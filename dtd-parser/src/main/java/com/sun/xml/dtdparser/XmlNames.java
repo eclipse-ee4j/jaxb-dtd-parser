@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -53,7 +53,7 @@ public class XmlNames {
      * @return true if the value is a legal "unqualified" XML name
      */
     public static boolean isUnqualifiedName(String value) {
-        if (value == null || value.length() == 0)
+        if (value == null || value.isEmpty())
             return false;
 
         char c = value.charAt(0);

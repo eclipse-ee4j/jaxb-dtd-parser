@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -124,7 +124,7 @@ final class XmlReader extends Reader {
     // in particular none of the EBCDIC ones IANA defines (and
     // which IBM encourages).
     //
-    static private final Map<String, String> charsets = new HashMap<>(31);
+    private static final Map<String, String> charsets = new HashMap<>(31);
 
     static {
         charsets.put("UTF-16", "Unicode");
@@ -515,7 +515,7 @@ final class XmlReader extends Reader {
     // for big and little endian streams make a difference, too;
     // fewer conditionals in the critical path!
     //
-    static abstract class BaseReader extends Reader {
+    abstract static class BaseReader extends Reader {
         protected InputStream instream;
         protected byte[] buffer;
         protected int start, finish;
@@ -735,8 +735,7 @@ final class XmlReader extends Reader {
                     start = 0;
                     finish = instream.read(buffer, 0, buffer.length);
                     if (finish <= 0) {
-                        if (finish <= 0)
-                            this.close();
+                        this.close();
                         break;
                     }
                 }
@@ -769,8 +768,7 @@ final class XmlReader extends Reader {
                     start = 0;
                     finish = instream.read(buffer, 0, buffer.length);
                     if (finish <= 0) {
-                        if (finish <= 0)
-                            this.close();
+                        this.close();
                         break;
                     }
                 }

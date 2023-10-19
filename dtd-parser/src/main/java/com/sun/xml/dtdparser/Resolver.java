@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -42,7 +42,7 @@ import java.util.Map;
  * supported, handling <em>charset=...</em> attributes and accepting
  * content types which are known to be safe for use with XML;</LI>
  *
- * <LI> The character encoding autodetection algorithm identified
+ * <LI> The character encoding auto-detection algorithm identified
  * in the XML specification is used, and leverages all of
  * the JDK 1.1 (and later) character encoding support.</LI>
  *
@@ -72,9 +72,9 @@ import java.util.Map;
  * URIs which are not URLs, such as URNs (see RFC 2396) or for accessing
  * MIME entities which are part of a <em>multipart/related</em> group
  * (see RFC 2387).  They may also be used to support particular catalog
- * syntaxes, such as the <a href="http://www.oasis-open.org/html/a401.htm">
+ * syntax's, such as the <a href="http://www.oasis-open.org/html/a401.htm">
  * SGML/Open Catalog (SOCAT)</a> which supports the SGML notion of "Formal
- * Public Identifiers (FPIs).
+ * Public Identifiers (FPIs)".
  *
  * @author David Brownell
  * @author Janet Koenig
@@ -91,9 +91,9 @@ public class Resolver implements EntityResolver {
     private Map<String, ClassLoader> id2loader;
 
     //
-    // table of MIME content types (less attributes!) known
+    // table of MIME content types (fewer attributes!) known
     // to be mostly "OK" to use with XML MIME entities.  the
-    // idea is to rule out obvious braindamage ("image/jpg")
+    // idea is to rule out obvious brain-damage ("image/jpg")
     // not the subtle stuff ("text/html") that might actually
     // be (or become) safe.
     //
@@ -115,7 +115,7 @@ public class Resolver implements EntityResolver {
     /**
      * <p>Returns an input source, using the MIME type information and URL
      * scheme to statically determine the correct character encoding if
-     * possible and otherwise autodetecting it.  MIME carefully specifies
+     * possible and otherwise auto-detecting it.  MIME carefully specifies
      * the character encoding defaults, and how attributes of the content
      * type can change it.  XML further specifies two mandatory encodings
      * (UTF-8 and UTF-16), and includes an XML declaration which can be
@@ -183,7 +183,7 @@ public class Resolver implements EntityResolver {
                                     attributes.indexOf('"'));
                         }
                         charset = attributes.trim();
-                        // XXX "\;", "\)" etc were mishandled above
+                        // XXX "\;", "\)" etc. were mishandled above
                     }
                 }
             }
@@ -193,8 +193,8 @@ public class Resolver implements EntityResolver {
             //
             if (checkType) {
                 boolean isOK = false;
-                for (int i = 0; i < types.length; i++)
-                    if (types[i].equals(contentType)) {
+                for (String type : types)
+                    if (type.equals(contentType)) {
                         isOK = true;
                         break;
                     }
@@ -206,7 +206,7 @@ public class Resolver implements EntityResolver {
             // "text/*" MIME types have hard-wired character set
             // defaults, as specified in the RFCs.  For XML, we
             // ignore the system "file.encoding" property since
-            // autodetection is more correct.
+            // auto-detection is more correct.
             //
             if (charset == null) {
                 contentType = contentType.trim();
@@ -234,7 +234,7 @@ public class Resolver implements EntityResolver {
      * @return an input source from given URI
      * @throws IOException for errors
      */
-    static public InputSource createInputSource(URL uri, boolean checkType)
+    public static InputSource createInputSource(URL uri, boolean checkType)
             throws IOException {
 
         URLConnection conn = uri.openConnection();
@@ -253,13 +253,13 @@ public class Resolver implements EntityResolver {
 
 
     /**
-     * Creates an input source from a given file, autodetecting
+     * Creates an input source from a given file, auto-detecting
      * the character encoding.
      * @param file file to create an input source from
      * @return an input source from given file
      * @throws IOException for errors
      */
-    static public InputSource createInputSource(File file)
+    public static InputSource createInputSource(File file)
             throws IOException {
         InputSource retval;
         String path;

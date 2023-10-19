@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,23 +51,23 @@ import java.util.logging.Logger;
  */
 public class DTDParser {
 
-    public final static String TYPE_CDATA = "CDATA";
-    public final static String TYPE_ID = "ID";
-    public final static String TYPE_IDREF = "IDREF";
-    public final static String TYPE_IDREFS = "IDREFS";
-    public final static String TYPE_ENTITY = "ENTITY";
-    public final static String TYPE_ENTITIES = "ENTITIES";
-    public final static String TYPE_NMTOKEN = "NMTOKEN";
-    public final static String TYPE_NMTOKENS = "NMTOKENS";
-    public final static String TYPE_NOTATION = "NOTATION";
-    public final static String TYPE_ENUMERATION = "ENUMERATION";
+    public static final String TYPE_CDATA = "CDATA";
+    public static final String TYPE_ID = "ID";
+    public static final String TYPE_IDREF = "IDREF";
+    public static final String TYPE_IDREFS = "IDREFS";
+    public static final String TYPE_ENTITY = "ENTITY";
+    public static final String TYPE_ENTITIES = "ENTITIES";
+    public static final String TYPE_NMTOKEN = "NMTOKEN";
+    public static final String TYPE_NMTOKENS = "NMTOKENS";
+    public static final String TYPE_NOTATION = "NOTATION";
+    public static final String TYPE_ENUMERATION = "ENUMERATION";
     // stack of input entities being merged
     private InputEntity in;
     // temporaries reused during parsing
     private StringBuffer strTmp;
     private char[] nameTmp;
     private NameCache nameCache;
-    private char[] charTmp = new char[2];
+    private final char[] charTmp = new char[2];
     // temporary DTD parsing state
     private boolean doLexicalPE;
     // DTD state, used during parsing
@@ -349,7 +350,7 @@ public class DTDParser {
             }
 
             // get rid of all DTD info ... some of it would be
-            // useful for editors etc, investigate later.
+            // useful for editors etc., investigate later.
 
             params.clear();
             entities.clear();
@@ -483,7 +484,7 @@ public class DTDParser {
     //
     // much similarity between parsing entity values in DTD
     // and attribute values (in DTD or content) ... both follow
-    // literal parsing rules, newline canonicalization, etc
+    // literal parsing rules, newline canonicalization, etc.
     //
     // leaves value in 'strTmp' ... either a "replacement text" (4.5),
     // or else partially normalized attribute value (the first bit
@@ -915,7 +916,7 @@ public class DTDParser {
             }
             nextSuffix = 1;
         } else if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
-            // 2 letter ISO code, or error
+            // 2-letter ISO code, or error
             c = value.charAt(0);
             if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))) {
                 return false;
@@ -945,7 +946,7 @@ public class DTDParser {
     // CHAPTER 3:  Logical Structures
     //
     /*
-     * To validate, subclassers should at this time make sure that values are of
+     * To validate, subclasses should at this time make sure that values are of
      * the declared types:<UL> <LI> ID and IDREF(S) values are Names <LI>
      * NMTOKEN(S) are Nmtokens <LI> ENUMERATION values match one of the tokens
      * <LI> NOTATION values match a notation name <LI> ENTITIY(IES) values match
@@ -1218,7 +1219,7 @@ public class DTDParser {
                     maybeWhitespace();
                     reportConnector(type);
                     continue;
-                } else if (c == '\u0029') {    // rparen
+                } else if (c == ')') {    // rparen
                     ungetc();
                     continue;
                 } else {
@@ -1299,7 +1300,7 @@ public class DTDParser {
         // [51] Mixed ::= '(' S? '#PCDATA' (S? '|' S? Name)* S? ')*'
         //        | '(' S? '#PCDATA'                   S? ')'
         maybeWhitespace();
-        if (peek("\u0029*") || peek("\u0029")) {
+        if (peek(")*") || peek(")")) {
             if (in != start) {
                 error("V-014", new Object[]{elementName});
             }
@@ -1333,7 +1334,7 @@ public class DTDParser {
             maybeWhitespace();
         }
 
-        if (!peek("\u0029*")) // right paren
+        if (!peek(")*")) // right paren
         {
             fatal("P-043", new Object[]{elementName, getc()});
         }
@@ -1493,7 +1494,7 @@ public class DTDParser {
             } ///            a.setIsRequired(true);
             else if (peek("#FIXED")) {
 ///            if (a.type() == Attribute.ID)
-                if (typeName == TYPE_ID) {
+                if (Objects.equals(typeName, TYPE_ID)) {
                     error("V-017", new Object[]{attName});
                 }
 ///            a.setIsFixed(true);
@@ -1505,7 +1506,7 @@ public class DTDParser {
 ///            else
 ///                a.setDefaultValue(strTmp.toString());
 
-                if (typeName == TYPE_CDATA) {
+                if (Objects.equals(typeName, TYPE_CDATA)) {
                     defaultValue = normalize(false);
                 } else {
                     defaultValue = strTmp.toString();
@@ -1520,7 +1521,7 @@ public class DTDParser {
                 attributeUse = DTDEventListener.USE_NORMAL;
 
 ///            if (a.type() == Attribute.ID)
-                if (typeName == TYPE_ID) {
+                if (Objects.equals(typeName, TYPE_ID)) {
                     error("V-018", new Object[]{attName});
                 }
                 parseLiteral(false);
@@ -1528,7 +1529,7 @@ public class DTDParser {
 ///                a.setDefaultValue(normalize(false));
 ///            else
 ///                a.setDefaultValue(strTmp.toString());
-                if (typeName == TYPE_CDATA) {
+                if (Objects.equals(typeName, TYPE_CDATA)) {
                     defaultValue = normalize(false);
                 } else {
                     defaultValue = strTmp.toString();
@@ -1573,7 +1574,7 @@ public class DTDParser {
         String s2 = s.trim();
         boolean didStrip = false;
 
-        if (s != s2) {
+        if (!Objects.equals(s, s2)) {
             s = s2;
             didStrip = true;
         }
@@ -1932,12 +1933,8 @@ public class DTDParser {
             if (baseURI == null) {
                 fatal("P-055", new Object[]{uri});
             }
-            if (uri.length() == 0) {
+            if (uri.isEmpty()) {
                 uri = ".";
-            }
-            if (baseURI == null) {
-                // make spotbugs happy
-                throw new NullPointerException("baseURI cannot be null");
             }
             baseURI = baseURI.substring(0, baseURI.lastIndexOf('/') + 1);
             if (uri.charAt(0) != '/') {
@@ -2047,7 +2044,7 @@ public class DTDParser {
 
         //
         // This should be the encoding in use, and it's even an error for
-        // it to be anything else (in certain cases that are impractical to
+        // it to be anything else (in certain cases that are impractical
         // to test, and may even be insufficient).  So, we do the best we
         // can, and warn if things look suspicious.  Note that Java doesn't
         // uniformly expose the encodings, and that the names it uses

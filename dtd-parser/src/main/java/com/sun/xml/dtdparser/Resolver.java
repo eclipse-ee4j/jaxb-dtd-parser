@@ -261,22 +261,8 @@ public class Resolver implements EntityResolver {
      */
     public static InputSource createInputSource(File file)
             throws IOException {
-        InputSource retval;
-        String path;
-
-        retval = new InputSource(XmlReader.createReader(new FileInputStream(file)));
-
-        // On JDK 1.2 and later, simplify this:
-        //    "path = file.toURL ().toString ()".
-        path = file.getAbsolutePath();
-        if (File.separatorChar != '/')
-            path = path.replace(File.separatorChar, '/');
-        if (!path.startsWith("/"))
-            path = "/" + path;
-        if (!path.endsWith("/") && file.isDirectory())
-            path = path + "/";
-
-        retval.setSystemId("file:" + path);
+        InputSource retval = new InputSource(XmlReader.createReader(new FileInputStream(file)));
+        retval.setSystemId(file.toURI().toURL().toString());
         return retval;
     }
 

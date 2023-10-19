@@ -117,7 +117,6 @@ import java.util.ResourceBundle;
  * as distributed in its JAR file.</p>
  *
  * @author David Brownell
- * @version 1.1, 00/08/05
  * @see java.util.Locale
  * @see java.util.ListResourceBundle
  * @see java.text.MessageFormat

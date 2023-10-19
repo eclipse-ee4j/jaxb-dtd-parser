@@ -78,7 +78,6 @@ import java.util.Map;
  *
  * @author David Brownell
  * @author Janet Koenig
- * @version 1.3 00/02/24
  */
 public class Resolver implements EntityResolver {
     private boolean ignoringMIME;

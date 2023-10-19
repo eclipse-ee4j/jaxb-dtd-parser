@@ -42,8 +42,6 @@ import java.util.Enumeration;
  * than {@code java.util.Hashtable} instances.  In this package
  * it makes a significant difference when normalizing attributes,
  * which is done for each start-element construct.
- *
- * @version $Revision: 1.2 $
  */
 final class SimpleHashtable<K, V> implements Enumeration<K> {
     // entries ...

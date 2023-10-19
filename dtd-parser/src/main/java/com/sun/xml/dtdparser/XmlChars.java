@@ -17,7 +17,6 @@ package com.sun.xml.dtdparser;
  * both to parse and to create such documents.
  *
  * @author David Brownell
- * @version 1.1, 00/08/05
  */
 public class XmlChars {
     // can't construct instances

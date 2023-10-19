@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -42,7 +42,7 @@ public class XmlChars {
      * @param ucs4char The 32-bit UCS-4 character being tested.
      * @return true if the argument is valid in XML documents
      */
-    static public boolean isChar(int ucs4char) {
+    public static boolean isChar(int ucs4char) {
         // [2] Char ::= #x0009 | #x000A | #x000D
         //            | [#x0020-#xD7FF]
         //    ... surrogates excluded!
@@ -171,7 +171,7 @@ public class XmlChars {
         //
         switch (Character.getType(c)) {
         // app. B footnote says these are 'name start'
-        // chars' ...
+        // chars ...
         case Character.LOWERCASE_LETTER:        // Ll
         case Character.UPPERCASE_LETTER:        // Lu
         case Character.OTHER_LETTER:            // Lo
@@ -197,7 +197,7 @@ public class XmlChars {
     // representations in Unicode, e.g. using combining chars.
     //
     private static boolean isCompatibilityChar(char c) {
-        // the numerous comparisions here seem unavoidable,
+        // the numerous comparisons here seem unavoidable,
         // but the switch can reduce the number which must
         // actually be executed.
 
@@ -268,7 +268,7 @@ public class XmlChars {
 
         case 0x21:
             return
-                    // various letterlike symbols
+                    // various letter-like symbols
                     c == 0x2102
                     || c == 0x2107
                     || (c >= 0x210a && c <= 0x2113)
@@ -330,7 +330,7 @@ public class XmlChars {
         //
         switch (Character.getType(c)) {
         // app. B footnote says these are 'name start'
-        // chars' ...
+        // chars ...
         case Character.LOWERCASE_LETTER:        // Ll
         case Character.UPPERCASE_LETTER:        // Lu
         case Character.OTHER_LETTER:            // Lo

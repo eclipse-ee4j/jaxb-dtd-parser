@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -28,7 +28,7 @@ public interface DTDEventListener extends EventListener {
      * Processing instructions contain information meaningful
      * to the application.
      *
-     * @param target The target of the proceessing instruction
+     * @param target The target of the processing instruction
      *               which should have meaning to the application.
      * @param data   The instruction itself which should contain
      *               valid XML characters.
@@ -220,7 +220,7 @@ public interface DTDEventListener extends EventListener {
 
     /**
      * Receive notification that a CDATA section is beginning.  Data in a
-     * CDATA section is is reported through the appropriate event, either
+     * CDATA section is reported through the appropriate event, either
      * <em>characters()</em> or <em>ignorableWhitespace</em>.
      *
      * @throws SAXException for errors
@@ -264,7 +264,7 @@ public interface DTDEventListener extends EventListener {
      *                         this element has mixed content model. #PCDATA will not be reported.
      *                         each child element will be reported by mixedElement method.
      *                         {@link #CONTENT_MODEL_CHILDREN}
-     *                         this elemen has child content model. The actual content model will
+     *                         this element has child content model. The actual content model will
      *                         be reported by childElement, startModelGroup, endModelGroup, and
      *                         connector methods. Possible call sequences are:
      *                         <p>
@@ -301,10 +301,10 @@ public interface DTDEventListener extends EventListener {
     void attributeDecl(String elementName, String attributeName, String attributeType,
                        String[] enumeration, short attributeUse, String defaultValue) throws SAXException;
 
-    void childElement(String elementName, short occurence) throws SAXException;
+    void childElement(String elementName, short occurrence) throws SAXException;
 
     /**
-     * receives notification of child element of mixed content model.this method is called for each child element.
+     * Receives notification of child element of mixed content model. This method is called for each child element.
      *
      * @throws SAXException for errors
      * @see #startContentModel(String, short)
@@ -313,7 +313,7 @@ public interface DTDEventListener extends EventListener {
 
     void startModelGroup() throws SAXException;
 
-    void endModelGroup(short occurence) throws SAXException;
+    void endModelGroup(short occurrence) throws SAXException;
 
     short CHOICE = 0;
     short SEQUENCE = 1;

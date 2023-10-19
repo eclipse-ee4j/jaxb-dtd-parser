@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -10,6 +10,7 @@
 
 package com.sun.xml.dtdparser;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.FieldPosition;
 import java.text.MessageFormat;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 
@@ -66,10 +68,10 @@ import java.util.ResourceBundle;
  * <p> At this time, this class does not include functionality permitting
  * messages to be passed around and localized after-the-fact.  The consequence
  * of this is that the locale for messages must be passed down through layers
- * which have no normal reason to support such passdown, or else the system
+ * which have no normal reason to support such pass-down, or else the system
  * default locale must be used instead of the one the client needs.</p>
  *
- * <p> The following guidelines should be used when constructiong
+ * <p> The following guidelines should be used when constructing
  * multi-language applications:</p>
  * <ol>
  * <li> Always use <a href=#chooseLocale>chooseLocale</a> to select the
@@ -122,7 +124,7 @@ import java.util.ResourceBundle;
  */
 // leave this as "abstract" -- each package needs its own subclass,
 // else it's not always going to be using the right class loader.
-abstract public class MessageCatalog {
+public abstract class MessageCatalog {
     private String bundleName;
 
     private MessageCatalog() {
@@ -155,9 +157,12 @@ abstract public class MessageCatalog {
         bundleName = packageMember.getName();
         index = bundleName.lastIndexOf('.');
         if (index == -1)    // "ClassName"
+        {
             bundleName = "";
-        else            // "some.package.ClassName"
+        } else            // "some.package.ClassName"
+        {
             bundleName = bundleName.substring(0, index) + ".";
+        }
         bundleName = bundleName + "resources." + bundle;
     }
 
@@ -181,8 +186,9 @@ abstract public class MessageCatalog {
         ResourceBundle bundle;
 
         // cope with unsupported locale...
-        if (locale == null)
+        if (locale == null) {
             locale = Locale.getDefault();
+        }
 
         try {
             bundle = ResourceBundle.getBundle(bundleName, locale);
@@ -214,8 +220,9 @@ abstract public class MessageCatalog {
     public String getMessage(Locale locale,
                              String messageId,
                              Object[] parameters) {
-        if (parameters == null)
+        if (parameters == null) {
             return getMessage(locale, messageId);
+        }
 
         // since most messages won't be tested (sigh), be friendly to
         // the inevitable developer errors of passing random data types
@@ -224,16 +231,18 @@ abstract public class MessageCatalog {
             if (!(parameters[i] instanceof String)
                     && !(parameters[i] instanceof Number)
                     && !(parameters[i] instanceof java.util.Date)) {
-                if (parameters[i] == null)
+                if (parameters[i] == null) {
                     parameters[i] = "(null)";
-                else
+                } else {
                     parameters[i] = parameters[i].toString();
+                }
             }
         }
 
         // similarly, cope with unsupported locale...
-        if (locale == null)
+        if (locale == null) {
             locale = Locale.getDefault();
+        }
 
         // get the appropriately localized MessageFormat object
         ResourceBundle bundle;
@@ -283,9 +292,11 @@ abstract public class MessageCatalog {
      */
     public Locale chooseLocale(String[] languages) {
         if ((languages = canonicalize(languages)) != null) {
-            for (int i = 0; i < languages.length; i++)
-                if (isLocaleSupported(languages[i]))
-                    return getLocale(languages[i]);
+            for (String language : languages) {
+                if (isLocaleSupported(language)) {
+                    return getLocale(language);
+                }
+            }
         }
         return null;
     }
@@ -302,14 +313,15 @@ abstract public class MessageCatalog {
         boolean didClone = false;
         int trimCount = 0;
 
-        if (languages == null)
+        if (languages == null) {
             return languages;
+        }
 
         for (int i = 0; i < languages.length; i++) {
             String lang = languages[i];
             int len = lang.length();
 
-            // no RFC1766 extensions allowed; "zh" and "zh-tw" (etc) are OK
+            // no RFC1766 extensions allowed; "zh" and "zh-tw" (etc.) are OK
             // as are regular locale names with no variant ("de_CH").
             if (!(len == 2 || len == 5)) {
                 if (!didClone) {
@@ -324,7 +336,7 @@ abstract public class MessageCatalog {
             // language code ... if already lowercase, we change nothing
             if (len == 2) {
                 lang = lang.toLowerCase(Locale.ENGLISH);
-                if (lang != languages[i]) {
+                if (!Objects.equals(lang, languages[i])) {
                     if (!didClone) {
                         languages = languages.clone();
                         didClone = true;
@@ -355,8 +367,9 @@ abstract public class MessageCatalog {
             int i;
 
             for (i = 0, trimCount = 0; i < temp.length; i++) {
-                while (languages[i + trimCount] == null)
+                while (languages[i + trimCount] == null) {
                     trimCount++;
+                }
                 temp[i] = languages[i + trimCount];
             }
             languages = temp;
@@ -379,28 +392,37 @@ abstract public class MessageCatalog {
             //
             // Special case the builtin JDK languages
             //
-            if (localeName.equals("de"))
+            if (localeName.equals("de")) {
                 return Locale.GERMAN;
-            if (localeName.equals("en"))
+            }
+            if (localeName.equals("en")) {
                 return Locale.ENGLISH;
-            if (localeName.equals("fr"))
+            }
+            if (localeName.equals("fr")) {
                 return Locale.FRENCH;
-            if (localeName.equals("it"))
+            }
+            if (localeName.equals("it")) {
                 return Locale.ITALIAN;
-            if (localeName.equals("ja"))
+            }
+            if (localeName.equals("ja")) {
                 return Locale.JAPANESE;
-            if (localeName.equals("ko"))
+            }
+            if (localeName.equals("ko")) {
                 return Locale.KOREAN;
-            if (localeName.equals("zh"))
+            }
+            if (localeName.equals("zh")) {
                 return Locale.CHINESE;
+            }
 
             language = localeName;
             country = "";
         } else {
-            if (localeName.equals("zh_CN"))
+            if (localeName.equals("zh_CN")) {
                 return Locale.SIMPLIFIED_CHINESE;
-            if (localeName.equals("zh_TW"))
+            }
+            if (localeName.equals("zh_TW")) {
                 return Locale.TRADITIONAL_CHINESE;
+            }
 
             //
             // JDK also has constants for countries:  en_GB, en_US, en_CA,
@@ -410,7 +432,7 @@ abstract public class MessageCatalog {
             country = localeName.substring(index + 1);
         }
 
-        return new Locale(language, country);
+        return new Locale.Builder().setLanguage(language).setRegion(country).build();
     }
 
 
@@ -418,7 +440,7 @@ abstract public class MessageCatalog {
     // cache for isLanguageSupported(), below ... key is a language
     // or locale name, value is a Boolean
     //
-    private Map<String, Boolean> cache = new HashMap<>(5);
+    private final Map<String, Boolean> cache = new HashMap<>(5);
 
 
     /**
@@ -449,8 +471,9 @@ abstract public class MessageCatalog {
         //
         Boolean value = cache.get(localeName);
 
-        if (value != null)
+        if (value != null) {
             return value;
+        }
 
         //
         // Try "language_country_variant", then "language_country",
@@ -471,28 +494,39 @@ abstract public class MessageCatalog {
             }
 
             // ... then property files (only for ISO Latin/1 messages)
-            InputStream in;
+            InputStream in = null;
 
-            if (loader == null)
+            if (loader == null) {
                 loader = getClass().getClassLoader();
+            }
 
             name = name.replace('.', '/');
             name = name + ".properties";
-            if (loader == null)
-                in = ClassLoader.getSystemResourceAsStream(name);
-            else
-                in = loader.getResourceAsStream(name);
-            if (in != null) {
-                cache.put(localeName, Boolean.TRUE);
-                return true;
+            try {
+                if (loader == null) {
+                    in = ClassLoader.getSystemResourceAsStream(name);
+                } else {
+                    in = loader.getResourceAsStream(name);
+                }
+                if (in != null) {
+                    cache.put(localeName, Boolean.TRUE);
+                    return true;
+                }
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException ioe) {}
+                }
             }
 
             int index = localeName.indexOf('_');
 
-            if (index > 0)
+            if (index > 0) {
                 localeName = localeName.substring(0, index);
-            else
+            } else {
                 break;
+            }
         }
 
         //

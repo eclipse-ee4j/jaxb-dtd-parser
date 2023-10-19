@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -72,9 +72,9 @@ public class InputEntity {
     // we minimize reads.  We also add a byte to compensate for the
     // "ungetc" byte we keep, so that our downstream reads are as
     // nicely sized as we can make them.
-    final private static int BUFSIZ = 8 * 1024 + 1;
+    private static final int BUFSIZ = 8 * 1024 + 1;
 
-    final private static char[] newline = {'\n'};
+    private static final char[] newline = {'\n'};
 
     public static InputEntity getInputEntity(DTDEventListener h, Locale l) {
         InputEntity retval = new InputEntity();
@@ -133,15 +133,17 @@ public class InputEntity {
         if (reader == null) {
             InputStream bytes = in.getByteStream();
 
-            if (bytes == null)
-                if (Boolean.getBoolean("enableExternalEntityProcessing"))
+            if (bytes == null) {
+                if (Boolean.getBoolean("enableExternalEntityProcessing")) {
                     reader = XmlReader.createReader(new URL(in.getSystemId()).openStream());
-                else
+                } else {
                     fatal("P-082", new Object[] {in.getSystemId()});
-            else if (in.getEncoding() != null)
+                }
+            } else if (in.getEncoding() != null) {
                 reader = XmlReader.createReader(in.getByteStream(), in.getEncoding());
-            else
+            } else {
                 reader = XmlReader.createReader(in.getByteStream());
+            }
         }
         next = stack;
         buf = new char[BUFSIZ];
@@ -166,11 +168,13 @@ public class InputEntity {
     private void checkRecursion(InputEntity stack)
             throws SAXException {
 
-        if (stack == null)
+        if (stack == null) {
             return;
+        }
         for (stack = stack.next; stack != null; stack = stack.next) {
-            if (stack.name != null && stack.name.equals(name))
+            if (stack.name != null && stack.name.equals(name)) {
                 fatal("P-069", new Object[]{name});
+            }
         }
     }
 
@@ -193,8 +197,9 @@ public class InputEntity {
         if (start >= finish) {
             fillbuf();
             return start >= finish;
-        } else
+        } else {
             return false;
+        }
     }
 
     /**
@@ -204,15 +209,18 @@ public class InputEntity {
      */
     public String getEncoding() {
 
-        if (reader == null)
+        if (reader == null) {
             return null;
-        if (reader instanceof XmlReader)
+        }
+        if (reader instanceof XmlReader) {
             return ((XmlReader) reader).getEncoding();
+        }
 
         // XXX prefer a java2std() call to normalize names...
 
-        if (reader instanceof InputStreamReader)
+        if (reader instanceof InputStreamReader) {
             return ((InputStreamReader) reader).getEncoding();
+        }
         return null;
     }
 
@@ -227,12 +235,14 @@ public class InputEntity {
      */
     public char getNameChar() throws IOException, SAXException {
 
-        if (finish <= start)
+        if (finish <= start) {
             fillbuf();
+        }
         if (finish > start) {
             char c = buf[start++];
-            if (XmlChars.isNameChar(c))
+            if (XmlChars.isNameChar(c)) {
                 return c;
+            }
             start--;
         }
         return 0;
@@ -248,8 +258,9 @@ public class InputEntity {
      */
     public char getc() throws IOException, SAXException {
 
-        if (finish <= start)
+        if (finish <= start) {
             fillbuf();
+        }
         if (finish > start) {
             char c = buf[start++];
 
@@ -261,14 +272,16 @@ public class InputEntity {
                 if (c >= 0xdc00 && c <= 0xdfff) {
                     returnedFirstHalf = false;
                     return c;
-                } else
+                } else {
                     fatal("P-070", new Object[]{Integer.toHexString(c)});
+                }
             }
             if ((c >= 0x0020 && c <= 0xD7FF)
                     || c == 0x0009
                     // no surrogates!
-                    || (c >= 0xE000 && c <= 0xFFFD))
+                    || (c >= 0xE000 && c <= 0xFFFD)) {
                 return c;
+            }
 
             //
             // CRLF and CR are both line ends; map both to LF, and
@@ -277,16 +290,18 @@ public class InputEntity {
             else if (c == '\r' && !isInternal()) {
                 maybeInCRLF = true;
                 c = getc();
-                if (c != '\n')
+                if (c != '\n') {
                     ungetc();
+                }
                 maybeInCRLF = false;
 
                 lineNumber++;
                 return '\n';
 
             } else if (c == '\n' || c == '\r') { // LF, or 2nd char in CRLF
-                if (!isInternal() && !maybeInCRLF)
+                if (!isInternal() && !maybeInCRLF) {
                     lineNumber++;
+                }
                 return c;
             }
 
@@ -311,14 +326,16 @@ public class InputEntity {
      */
     public boolean peekc(char c) throws IOException, SAXException {
 
-        if (finish <= start)
+        if (finish <= start) {
             fillbuf();
+        }
         if (finish > start) {
             if (buf[start] == c) {
                 start++;
                 return true;
-            } else
+            } else {
                 return false;
+            }
         }
         return false;
     }
@@ -329,15 +346,18 @@ public class InputEntity {
      */
     public void ungetc() {
 
-        if (start == 0)
+        if (start == 0) {
             throw new InternalError("ungetc");
+        }
         start--;
 
         if (buf[start] == '\n' || buf[start] == '\r') {
-            if (!isInternal())
+            if (!isInternal()) {
                 lineNumber--;
-        } else if (returnedFirstHalf)
+            }
+        } else if (returnedFirstHalf) {
             returnedFirstHalf = false;
+        }
     }
 
 
@@ -355,10 +375,12 @@ public class InputEntity {
 
         // [3] S ::= #20 | #09 | #0D | #0A
         for (; ;) {
-            if (finish <= start)
+            if (finish <= start) {
                 fillbuf();
-            if (finish <= start)
+            }
+            if (finish <= start) {
                 return isSpace;
+            }
 
             c = buf[start++];
             if (c == 0x20 || c == 0x09 || c == '\n' || c == '\r') {
@@ -372,8 +394,9 @@ public class InputEntity {
                         lineNumber++;
                         sawCR = false;
                     }
-                    if (c == '\r')
+                    if (c == '\r') {
                         sawCR = true;
+                    }
                 }
             } else {
                 start--;
@@ -420,7 +443,9 @@ public class InputEntity {
                     start = last;
                 }
                 if (isEOF())    // calls fillbuf
+                {
                     return sawContent;
+                }
                 first = start;
                 last = first - 1;    // incremented in loop
                 continue;
@@ -443,17 +468,20 @@ public class InputEntity {
                     || (c > 0x0026 && c < 0x003C)    // 0-9 & punct
                     || c == 0x0009
                     || (c >= 0xE000 && c <= 0xFFFD)
-            )
+            ) {
                 continue;
+            }
 
             // terminate on markup delimiters
-            if (c == '<' || c == '&')
+            if (c == '<' || c == '&') {
                 break;
+            }
 
             // count lines
             if (c == '\n') {
-                if (!isInternal())
+                if (!isInternal()) {
                     lineNumber++;
+                }
                 continue;
             }
 
@@ -461,16 +489,18 @@ public class InputEntity {
             // Internal ones got it already, and we can't repeat
             // else we break char ref handling!!
             if (c == '\r') {
-                if (isInternal())
+                if (isInternal()) {
                     continue;
+                }
 
                 docHandler.characters(buf, first, last - first);
                 docHandler.characters(newline, 0, 1);
                 sawContent = true;
                 lineNumber++;
                 if (finish > (last + 1)) {
-                    if (buf[last + 1] == '\n')
+                    if (buf[last + 1] == '\n') {
                         last++;
+                    }
                 } else {    // CR at end of buffer
 // XXX case not yet handled:  CRLF here will look like two lines
                 }
@@ -484,15 +514,18 @@ public class InputEntity {
                 // for suspicious end-of-buffer cases, get more data
                 // into the buffer to rule out this sequence.
                 case 2:
-                    if (buf[last + 1] != ']')
+                    if (buf[last + 1] != ']') {
                         continue;
+                    }
                     // FALLTHROUGH
 
                 case 1:
-                    if (reader == null || isClosed)
+                    if (reader == null || isClosed) {
                         continue;
-                    if (last == first)
+                    }
+                    if (last == first) {
                         throw new InternalError("fillbuf");
+                    }
                     last--;
                     if (last > first) {
 //            validator.text ();
@@ -507,8 +540,9 @@ public class InputEntity {
                     // otherwise any "]]>" would be buffered, and we can
                     // see right away if that's what we have
                 default:
-                    if (buf[last + 1] == ']' && buf[last + 2] == '>')
+                    if (buf[last + 1] == ']' && buf[last + 2] == '>') {
                         fatal("P-072", null);
+                    }
                     continue;
                 }
             }
@@ -530,9 +564,9 @@ public class InputEntity {
                     last = first;
                     continue;
                 }
-                if (checkSurrogatePair(last))
+                if (checkSurrogatePair(last)) {
                     last++;
-                else {
+                } else {
                     last--;
                     // also terminate on surrogate pair oddities
                     break;
@@ -542,8 +576,9 @@ public class InputEntity {
 
             fatal("P-071", new Object[]{Integer.toHexString(c)});
         }
-        if (last == first)
+        if (last == first) {
             return sawContent;
+        }
 //    validator.text ();
         docHandler.characters(buf, first, last - first);
         start = last;
@@ -581,8 +616,9 @@ public class InputEntity {
         // [21] CDEnd ::= ']]>'
 
         // caller peeked the leading '<' ...
-        if (!peek("![CDATA[", null))
+        if (!peek("![CDATA[", null)) {
             return false;
+        }
         docHandler.startCDATA();
 
         // only a literal ']]>' stops this ...
@@ -617,19 +653,22 @@ public class InputEntity {
                     {Integer.toHexString(buf[last])});
                 }
                 if (c == '\n') {
-                    if (!isInternal())
+                    if (!isInternal()) {
                         lineNumber++;
+                    }
                     continue;
                 }
                 if (c == '\r') {
                     // As above, we can't repeat CR/CRLF --> LF mapping
-                    if (isInternal())
+                    if (isInternal()) {
                         continue;
+                    }
 
                     if (white) {
-                        if (whitespaceInvalidMessage != null && errHandler != null)
+                        if (whitespaceInvalidMessage != null && errHandler != null) {
                             errHandler.error(new SAXParseException(DTDParser.messages.getMessage(locale,
                                     whitespaceInvalidMessage), null));
+                        }
                         docHandler.ignorableWhitespace(buf, start,
                                 last - start);
                         docHandler.ignorableWhitespace(newline, 0, 1);
@@ -640,8 +679,9 @@ public class InputEntity {
                     }
                     lineNumber++;
                     if (finish > (last + 1)) {
-                        if (buf[last + 1] == '\n')
+                        if (buf[last + 1] == '\n') {
                             last++;
+                        }
                     } else {    // CR at end of buffer
 // XXX case not yet handled ... as above
                     }
@@ -649,8 +689,9 @@ public class InputEntity {
                     continue;
                 }
                 if (c != ']') {
-                    if (c != ' ' && c != '\t')
+                    if (c != ' ' && c != '\t') {
                         white = false;
+                    }
                     continue;
                 }
                 if ((last + 2) < finish) {
@@ -666,9 +707,10 @@ public class InputEntity {
                 }
             }
             if (white) {
-                if (whitespaceInvalidMessage != null && errHandler != null)
+                if (whitespaceInvalidMessage != null && errHandler != null) {
                     errHandler.error(new SAXParseException(DTDParser.messages.getMessage(locale,
                             whitespaceInvalidMessage), null));
+                }
                 docHandler.ignorableWhitespace(buf, start, last - start);
             } else {
 //        validator.text ();
@@ -679,8 +721,9 @@ public class InputEntity {
                 break;
             }
             start = last;
-            if (isEOF())
+            if (isEOF()) {
                 fatal("P-073", null);
+            }
         }
         docHandler.endCDATA();
         return true;
@@ -690,14 +733,16 @@ public class InputEntity {
     private boolean checkSurrogatePair(int offset)
             throws SAXException {
 
-        if ((offset + 1) >= finish)
+        if ((offset + 1) >= finish) {
             return false;
+        }
 
         char c1 = buf[offset++];
         char c2 = buf[offset];
 
-        if ((c1 >= 0xd800 && c1 < 0xdc00) && (c2 >= 0xdc00 && c2 <= 0xdfff))
+        if ((c1 >= 0xd800 && c1 < 0xdc00) && (c2 >= 0xdc00 && c2 <= 0xdfff)) {
             return true;
+        }
         fatal("P-074", new Object[]{
             Integer.toHexString(c1 & 0x0ffff),
             Integer.toHexString(c2 & 0x0ffff)
@@ -707,7 +752,7 @@ public class InputEntity {
 
 
     /**
-     * whitespace in markup (flagged to app, discardable)
+     * whitespace in markup (flagged to app, discard-able)
      *
      * <P> the document handler's ignorableWhitespace() method
      * is called on all the whitespace found
@@ -725,19 +770,22 @@ public class InputEntity {
         // [3] S ::= #20 | #09 | #0D | #0A
         for (first = start; ;) {
             if (finish <= start) {
-                if (isSpace)
+                if (isSpace) {
                     handler.ignorableWhitespace(buf, first, start - first);
+                }
                 fillbuf();
                 first = start;
             }
-            if (finish <= start)
+            if (finish <= start) {
                 return isSpace;
+            }
 
             c = buf[start++];
             switch (c) {
             case '\n':
-                if (!isInternal())
+                if (!isInternal()) {
                     lineNumber++;
+                }
 // XXX handles Macintosh line endings wrong
                 // fallthrough
             case 0x09:
@@ -747,20 +795,23 @@ public class InputEntity {
 
             case '\r':
                 isSpace = true;
-                if (!isInternal())
+                if (!isInternal()) {
                     lineNumber++;
+                }
                 handler.ignorableWhitespace(buf, first,
                         (start - 1) - first);
                 handler.ignorableWhitespace(newline, 0, 1);
-                if (start < finish && buf[start] == '\n')
+                if (start < finish && buf[start] == '\n') {
                     ++start;
+                }
                 first = start;
                 continue;
 
             default:
                 ungetc();
-                if (isSpace)
+                if (isSpace) {
                     handler.ignorableWhitespace(buf, first, start - first);
+                }
                 return isSpace;
             }
         }
@@ -782,39 +833,45 @@ public class InputEntity {
         int len;
         int i;
 
-        if (chars != null)
+        if (chars != null) {
             len = chars.length;
-        else
+        } else {
             len = next.length();
+        }
 
         // buffer should hold the whole thing ... give it a
         // chance for the end-of-buffer case and cope with EOF
         // by letting fillbuf compact and fill
-        if (finish <= start || (finish - start) < len)
+        if (finish <= start || (finish - start) < len) {
             fillbuf();
+        }
 
         // can't peek past EOF
-        if (finish <= start)
+        if (finish <= start) {
             return false;
+        }
 
         // compare the string; consume iff it matches
         if (chars != null) {
             for (i = 0; i < len && (start + i) < finish; i++) {
-                if (buf[start + i] != chars[i])
+                if (buf[start + i] != chars[i]) {
                     return false;
+                }
             }
         } else {
             for (i = 0; i < len && (start + i) < finish; i++) {
-                if (buf[start + i] != next.charAt(i))
+                if (buf[start + i] != next.charAt(i)) {
                     return false;
+                }
             }
         }
 
         // if the first fillbuf didn't get enough data, give
         // fillbuf another chance to read
         if (i < len) {
-            if (reader == null || isClosed)
+            if (reader == null || isClosed) {
                 return false;
+            }
 
             //
             // This diagnostic "knows" that the only way big strings would
@@ -844,8 +901,9 @@ public class InputEntity {
     //
     public void startRemembering() {
 
-        if (startRemember != 0)
+        if (startRemember != 0) {
             throw new InternalError();
+        }
         startRemember = start;
     }
 
@@ -859,9 +917,10 @@ public class InputEntity {
             rememberedText.append(buf, startRemember,
                     start - startRemember);
             retval = rememberedText.toString();
-        } else
+        } else {
             retval = new String(buf, startRemember,
                     start - startRemember);
+        }
 
         startRemember = 0;
         rememberedText = null;
@@ -874,8 +933,9 @@ public class InputEntity {
 
         // don't report locations within internal entities!
 
-        while (current != null && current.input == null)
+        while (current != null && current.input == null) {
             current = current.next;
+        }
         return current == null ? this : current;
     }
 
@@ -886,8 +946,9 @@ public class InputEntity {
     public String getPublicId() {
 
         InputEntity where = getTopEntity();
-        if (where == this)
+        if (where == this) {
             return input.getPublicId();
+        }
         return where.getPublicId();
     }
 
@@ -898,8 +959,9 @@ public class InputEntity {
     public String getSystemId() {
 
         InputEntity where = getTopEntity();
-        if (where == this)
+        if (where == this) {
             return input.getSystemId();
+        }
         return where.getSystemId();
     }
 
@@ -910,8 +972,9 @@ public class InputEntity {
     public int getLineNumber() {
 
         InputEntity where = getTopEntity();
-        if (where == this)
+        if (where == this) {
             return lineNumber;
+        }
         return where.getLineNumber();
     }
 
@@ -941,13 +1004,15 @@ public class InputEntity {
         // don't touched fixed buffers, that'll usually
         // change entity values (and isn't needed anyway)
         // likewise, ignore closed streams
-        if (reader == null || isClosed)
+        if (reader == null || isClosed) {
             return;
+        }
 
         // if remembering DTD text, copy!
         if (startRemember != 0) {
-            if (rememberedText == null)
+            if (rememberedText == null) {
                 rememberedText = new StringBuffer(buf.length);
+            }
             rememberedText.append(buf, startRemember,
                     start - startRemember);
         }
@@ -956,7 +1021,9 @@ public class InputEntity {
         int len;
 
         if (extra)        // extra pushback
+        {
             start--;
+        }
         len = finish - start;
 
         System.arraycopy(buf, start, buf, 0, len);
@@ -971,23 +1038,29 @@ public class InputEntity {
         } catch (CharConversionException e) {
             fatal("P-076", new Object[]{e.getMessage()});
         }
-        if (len >= 0)
+        if (len >= 0) {
             finish += len;
-        else
+        } else {
             close();
+        }
         if (extra)        // extra pushback
+        {
             start++;
+        }
 
         if (startRemember != 0)
         // assert extra == true
+        {
             startRemember = 1;
+        }
     }
 
     public void close() {
 
         try {
-            if (reader != null && !isClosed)
+            if (reader != null && !isClosed) {
                 reader.close();
+            }
             isClosed = true;
         } catch (IOException e) {
             /* NOTHING */

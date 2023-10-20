@@ -24,7 +24,7 @@
 
     <groupId>com.sun.xml.dtd-parser</groupId>
     <artifactId>dtd-parser</artifactId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.5.1</version>
     <packaging>jar</packaging>
     <name>DTD Parser</name>
     <description>SAX-like API for parsing XML DTDs.</description>

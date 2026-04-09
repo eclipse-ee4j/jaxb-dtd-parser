@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -391,26 +392,21 @@ public abstract class MessageCatalog {
             //
             // Special case the builtin JDK languages
             //
-            if (localeName.equals("de")) {
-                return Locale.GERMAN;
-            }
-            if (localeName.equals("en")) {
-                return Locale.ENGLISH;
-            }
-            if (localeName.equals("fr")) {
-                return Locale.FRENCH;
-            }
-            if (localeName.equals("it")) {
-                return Locale.ITALIAN;
-            }
-            if (localeName.equals("ja")) {
-                return Locale.JAPANESE;
-            }
-            if (localeName.equals("ko")) {
-                return Locale.KOREAN;
-            }
-            if (localeName.equals("zh")) {
-                return Locale.CHINESE;
+            switch (localeName) {
+                case "de":
+                    return Locale.GERMAN;
+                case "en":
+                    return Locale.ENGLISH;
+                case "fr":
+                    return Locale.FRENCH;
+                case "it":
+                    return Locale.ITALIAN;
+                case "ja":
+                    return Locale.JAPANESE;
+                case "ko":
+                    return Locale.KOREAN;
+                case "zh":
+                    return Locale.CHINESE;
             }
 
             language = localeName;

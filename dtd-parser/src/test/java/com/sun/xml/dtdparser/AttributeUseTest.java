@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -13,12 +14,13 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class AttributeUseTest {
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+class AttributeUseTest {
     Map<String, Short> attributes = new HashMap<>();
 
     public AttributeUseTest() throws Exception {
@@ -45,22 +47,22 @@ public class AttributeUseTest {
     }
 
     @Test
-    public void testNormalAttribute() {
-        Assert.assertEquals(DTDEventListener.USE_NORMAL, attributes.get("normal").shortValue());
+    void testNormalAttribute() {
+        Assertions.assertEquals(DTDEventListener.USE_NORMAL, attributes.get("normal").shortValue());
     }
 
     @Test
-    public void testImpliedAttribute() {
-        Assert.assertEquals(DTDEventListener.USE_IMPLIED, attributes.get("implied").shortValue());
+    void testImpliedAttribute() {
+        Assertions.assertEquals(DTDEventListener.USE_IMPLIED, attributes.get("implied").shortValue());
     }
 
     @Test
-    public void testRequiredAttribute() {
-        Assert.assertEquals(DTDEventListener.USE_REQUIRED, attributes.get("required").shortValue());
+    void testRequiredAttribute() {
+        Assertions.assertEquals(DTDEventListener.USE_REQUIRED, attributes.get("required").shortValue());
     }
 
     @Test
-    public void testFixedAttribute() {
-        Assert.assertEquals(DTDEventListener.USE_FIXED, attributes.get("fixed").shortValue());
+    void testFixedAttribute() {
+        Assertions.assertEquals(DTDEventListener.USE_FIXED, attributes.get("fixed").shortValue());
     }
 }

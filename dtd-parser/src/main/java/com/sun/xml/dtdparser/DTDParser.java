@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -281,7 +282,7 @@ public class DTDParser {
         entities.put(entityName, entity);
     }
 
-    ////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////
     //
     // parsing is by recursive descent, code roughly
     // following the BNF rules except tweaked for simple
@@ -291,7 +292,7 @@ public class DTDParser {
     // a classic benefit of recursive descent parsers:  it's
     // relatively easy to get diagnostics that make sense.
     //
-    ////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////
     private void parseInternal(InputSource input)
             throws IOException, SAXException {
 
@@ -2110,11 +2111,11 @@ public class DTDParser {
         return true;
     }
 
-    ////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////
     //
     //    UTILITIES
     //
-    ////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////
     private char getc() throws IOException, SAXException {
 
         if (!doLexicalPE) {

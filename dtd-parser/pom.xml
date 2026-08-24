@@ -77,7 +77,7 @@
         <spotbugs.exclude>${project.basedir}/../etc/spotbugs-exclude.xml</spotbugs.exclude>
         <spotbugs.skip>false</spotbugs.skip>
         <spotbugs.threshold>Low</spotbugs.threshold>
-        <spotbugs.version>4.10.3.0</spotbugs.version>
+        <spotbugs.version>4.10.4.0</spotbugs.version>
         <legal.doc.source>${project.basedir}/..</legal.doc.source>
 
         <maven.compiler.release>11</maven.compiler.release>
